@@ -39,9 +39,8 @@ git clone https://github.com/awslabs/Log-Analyzer-with-MCP.git
 cd Log-Analyzer-with-MCP
 
 # Create a virtual environment and install dependencies
-uv venv
+uv sync
 source .venv/bin/activate  # On Windows, use `.venv\Scripts\activate`
-uv pip install -e .
 ```
 
 ## 🚦 Quick Start

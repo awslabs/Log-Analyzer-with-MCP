@@ -1,0 +1,65 @@
+# AI Integration Guide
+
+## 🖥️ Claude Desktop Integration
+
+You can add the configuration for the MCP server in Claude for Desktop for AI-assisted log analysis.
+
+To get Claude for Desktop and how to add an MCP server, access [this link](https://modelcontextprotocol.io/quickstart/user). Add this to your respective json file:
+
+```json
+{
+  "mcpServers": {
+    "cw-mcp-server": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/path/to/Log-Analyzer-with-MCP/src/cw-mcp-server",
+        "run",
+        "server.py"
+      ]
+    }
+  },
+}
+```
+
+If you're running into issues, check out the [troubleshooting guide](./troubleshooting.md) or open a GitHub Issue. 
+
+## 🔍 AI Assistant Capabilities
+
+With the enhanced tool support, AI assistants can now:
+
+1. **Discover Log Groups**:
+   - "Show me all my CloudWatch log groups"
+   - "List log groups that start with /aws/lambda"
+   - "Show me the next page of log groups"
+
+2. **Understand Log Structure**:
+   - "Analyze the structure of my API Gateway logs"
+   - "What fields are common in these JSON logs?"
+   - "Show me a sample of recent logs from this group"
+
+3. **Diagnose Issues**:
+   - "Find all errors in my Lambda logs from the past 24 hours"
+   - "What's the most common error pattern in this log group?"
+   - "Show me logs around the time this service crashed"
+
+4. **Perform Analysis**:
+   - "Compare log volumes between these three services"
+   - "Find correlations between errors in my database and API logs"
+   - "Analyze the trend of timeouts in my Lambda function"
+
+## 💬 AI Prompt Templates
+
+The server provides specialized prompts that AI assistants can use:
+
+1. **List and Explore Log Groups Prompt**:
+   ```
+   I'll help you explore the CloudWatch log groups in your AWS environment.
+   First, I'll list the available log groups...
+   ```
+
+2. **Log Analysis Prompt**:
+   ```
+   Please analyze the following CloudWatch logs from the {log_group_name} log group.
+   First, I'll get you some information about the log group...
+   ``` 

@@ -120,6 +120,20 @@ search_parser.add_argument(
     "--hours", type=int, default=24, help="Number of hours to look back (default: 24)"
 )
 
+# Search multiple log groups command
+search_multi_parser = subparsers.add_parser(
+    "search-multi", help="Search for patterns across multiple CloudWatch log groups"
+)
+search_multi_parser.add_argument(
+    "log_group_names", nargs="+", help="List of log group names to search"
+)
+search_multi_parser.add_argument(
+    "query", help="The search query (CloudWatch Logs Insights syntax)"
+)
+search_multi_parser.add_argument(
+    "--hours", type=int, default=24, help="Number of hours to look back (default: 24)"
+)
+
 # Summarize log activity command
 summarize_parser = subparsers.add_parser(
     "summarize", help="Generate a summary of log activity"
@@ -302,6 +316,17 @@ async def main():
                         "search_logs",
                         arguments={
                             "log_group_name": args.log_group_name,
+                            "query": args.query,
+                            "hours": args.hours,
+                        },
+                    )
+                    print_json_response(result)
+
+                elif args.command == "search-multi":
+                    result = await session.call_tool(
+                        "search_logs_multi",
+                        arguments={
+                            "log_group_names": args.log_group_names,
                             "query": args.query,
                             "hours": args.hours,
                         },

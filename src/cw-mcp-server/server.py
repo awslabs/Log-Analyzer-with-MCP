@@ -233,6 +233,24 @@ async def search_logs(log_group_name: str, query: str, hours: int = 24) -> str:
 
 
 @mcp.tool()
+async def search_logs_multi(
+    log_group_names: List[str], query: str, hours: int = 24
+) -> str:
+    """
+    Search logs across multiple log groups using CloudWatch Logs Insights.
+    
+    Args:
+        log_group_names: List of log groups to search
+        query: CloudWatch Logs Insights query in Logs Insights syntax
+        hours: Number of hours to look back (default: 24)
+    
+    Returns:
+        JSON string with search results
+    """
+    return await search_tools.search_logs_multi(log_group_names, query, hours)
+
+
+@mcp.tool()
 async def filter_log_events(
     log_group_name: str, filter_pattern: str, hours: int = 24
 ) -> str:

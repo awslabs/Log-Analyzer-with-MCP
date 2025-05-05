@@ -8,6 +8,7 @@ import boto3
 import json
 import time
 from datetime import datetime, timedelta
+from typing import List
 
 from . import handle_exceptions
 
@@ -35,13 +36,30 @@ class CloudWatchLogsSearchTools:
         Returns:
             JSON string with search results
         """
+        return await self.search_logs_multi([log_group_name], query, hours)
+
+    @handle_exceptions
+    async def search_logs_multi(
+        self, log_group_names: List[str], query: str, hours: int = 24
+    ) -> str:
+        """
+        Search logs across multiple log groups using CloudWatch Logs Insights query.
+
+        Args:
+            log_group_names: List of log groups to search
+            query: CloudWatch Logs Insights query syntax
+            hours: Number of hours to look back
+
+        Returns:
+            JSON string with search results
+        """
         # Calculate time range
         end_time = int(datetime.now().timestamp() * 1000)
         start_time = int((datetime.now() - timedelta(hours=hours)).timestamp() * 1000)
 
         # Start the query
         start_query_response = self.logs_client.start_query(
-            logGroupName=log_group_name,
+            logGroupNames=log_group_names,
             startTime=start_time,
             endTime=end_time,
             queryString=query,
@@ -72,6 +90,7 @@ class CloudWatchLogsSearchTools:
         formatted_results = {
             "status": response["status"],
             "statistics": response.get("statistics", {}),
+            "searchedLogGroups": log_group_names,
             "results": [],
         }
 

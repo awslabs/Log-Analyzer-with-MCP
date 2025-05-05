@@ -115,7 +115,8 @@ The server provides the following tool handlers for AI assistants:
 | Tool | Description |
 |------|-------------|
 | `list_log_groups` | List available CloudWatch log groups with filtering options |
-| `search_logs` | Execute CloudWatch Logs Insights queries |
+| `search_logs` | Execute CloudWatch Logs Insights queries on a single log group |
+| `search_logs_multi` | Execute CloudWatch Logs Insights queries across multiple log groups |
 | `filter_log_events` | Filter logs by pattern across all streams |
 | `summarize_log_activity` | Generate time-based activity summaries |
 | `find_error_patterns` | Identify common error patterns |

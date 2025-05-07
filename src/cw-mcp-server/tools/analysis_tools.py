@@ -7,6 +7,7 @@ import asyncio
 import boto3
 import json
 from datetime import datetime, timedelta
+import dateutil.parser
 
 from . import handle_exceptions
 
@@ -19,21 +20,38 @@ class CloudWatchLogsAnalysisTools:
         # Initialize boto3 CloudWatch Logs client using default credential chain
         self.logs_client = boto3.client("logs")
 
+    def _get_time_range(self, hours: int, start_time: str = None, end_time: str = None):
+        if start_time:
+            start_ts = int(dateutil.parser.isoparse(start_time).timestamp() * 1000)
+        else:
+            start_ts = int((datetime.now() - timedelta(hours=hours)).timestamp() * 1000)
+        if end_time:
+            end_ts = int(dateutil.parser.isoparse(end_time).timestamp() * 1000)
+        else:
+            end_ts = int(datetime.now().timestamp() * 1000)
+        return start_ts, end_ts
+
     @handle_exceptions
-    async def summarize_log_activity(self, log_group_name: str, hours: int = 24) -> str:
+    async def summarize_log_activity(
+        self,
+        log_group_name: str,
+        hours: int = 24,
+        start_time: str = None,
+        end_time: str = None,
+    ) -> str:
         """
         Generate a summary of log activity over a specified time period.
 
         Args:
             log_group_name: The log group to analyze
             hours: Number of hours to look back
+            start_time: Start time in ISO8601 format
+            end_time: End time in ISO8601 format
 
         Returns:
             JSON string with activity summary
         """
-        # Calculate time range
-        end_time = int(datetime.now().timestamp() * 1000)
-        start_time = int((datetime.now() - timedelta(hours=hours)).timestamp() * 1000)
+        start_ts, end_ts = self._get_time_range(hours, start_time, end_time)
 
         # Use CloudWatch Logs Insights to get a summary
         query = """
@@ -46,8 +64,8 @@ class CloudWatchLogsAnalysisTools:
         # Start the query
         start_query_response = self.logs_client.start_query(
             logGroupName=log_group_name,
-            startTime=start_time,
-            endTime=end_time,
+            startTime=start_ts,
+            endTime=end_ts,
             queryString=query,
         )
 
@@ -69,8 +87,8 @@ class CloudWatchLogsAnalysisTools:
         # Start the hourly query
         hourly_query_response = self.logs_client.start_query(
             logGroupName=log_group_name,
-            startTime=start_time,
-            endTime=end_time,
+            startTime=start_ts,
+            endTime=end_ts,
             queryString=hourly_query,
         )
 
@@ -87,8 +105,8 @@ class CloudWatchLogsAnalysisTools:
         # Process the main summary results
         summary = {
             "timeRange": {
-                "start": datetime.fromtimestamp(start_time / 1000).isoformat(),
-                "end": datetime.fromtimestamp(end_time / 1000).isoformat(),
+                "start": datetime.fromtimestamp(start_ts / 1000).isoformat(),
+                "end": datetime.fromtimestamp(end_ts / 1000).isoformat(),
                 "hours": hours,
             },
             "logEvents": 0,
@@ -119,20 +137,26 @@ class CloudWatchLogsAnalysisTools:
         return json.dumps(summary, indent=2)
 
     @handle_exceptions
-    async def find_error_patterns(self, log_group_name: str, hours: int = 24) -> str:
+    async def find_error_patterns(
+        self,
+        log_group_name: str,
+        hours: int = 24,
+        start_time: str = None,
+        end_time: str = None,
+    ) -> str:
         """
         Find common error patterns in logs.
 
         Args:
             log_group_name: The log group to analyze
             hours: Number of hours to look back
+            start_time: Start time in ISO8601 format
+            end_time: End time in ISO8601 format
 
         Returns:
             JSON string with error patterns
         """
-        # Calculate time range
-        end_time = int(datetime.now().timestamp() * 1000)
-        start_time = int((datetime.now() - timedelta(hours=hours)).timestamp() * 1000)
+        start_ts, end_ts = self._get_time_range(hours, start_time, end_time)
 
         # Query for error logs
         error_query = """
@@ -145,8 +169,8 @@ class CloudWatchLogsAnalysisTools:
         # Start the query
         start_query_response = self.logs_client.start_query(
             logGroupName=log_group_name,
-            startTime=start_time,
-            endTime=end_time,
+            startTime=start_ts,
+            endTime=end_ts,
             queryString=error_query,
         )
 
@@ -161,8 +185,8 @@ class CloudWatchLogsAnalysisTools:
         # Process the results
         error_patterns = {
             "timeRange": {
-                "start": datetime.fromtimestamp(start_time / 1000).isoformat(),
-                "end": datetime.fromtimestamp(end_time / 1000).isoformat(),
+                "start": datetime.fromtimestamp(start_ts / 1000).isoformat(),
+                "end": datetime.fromtimestamp(end_ts / 1000).isoformat(),
                 "hours": hours,
             },
             "errorPatterns": [],

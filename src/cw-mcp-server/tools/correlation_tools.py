@@ -7,10 +7,11 @@ import asyncio
 import boto3
 import json
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import List
 
 from . import handle_exceptions
+from .utils import get_time_range
 
 
 class CloudWatchLogsCorrelationTools:
@@ -23,7 +24,12 @@ class CloudWatchLogsCorrelationTools:
 
     @handle_exceptions
     async def correlate_logs(
-        self, log_group_names: List[str], search_term: str, hours: int = 24
+        self,
+        log_group_names: List[str],
+        search_term: str,
+        hours: int = 24,
+        start_time: str = None,
+        end_time: str = None,
     ) -> str:
         """
         Correlate logs across multiple AWS services using a common search term.
@@ -32,13 +38,13 @@ class CloudWatchLogsCorrelationTools:
             log_group_names: List of log group names to search
             search_term: Term to search for in logs (request ID, transaction ID, etc.)
             hours: Number of hours to look back
+            start_time: Start time in ISO8601 format
+            end_time: End time in ISO8601 format
 
         Returns:
             JSON string with correlated events
         """
-        # Calculate time range
-        end_time = int(datetime.now().timestamp() * 1000)
-        start_time = int((datetime.now() - timedelta(hours=hours)).timestamp() * 1000)
+        start_ts, end_ts = get_time_range(hours, start_time, end_time)
 
         # Validate inputs
         if not log_group_names:
@@ -54,8 +60,8 @@ class CloudWatchLogsCorrelationTools:
         # Results dictionary
         results = {
             "timeRange": {
-                "start": datetime.fromtimestamp(start_time / 1000).isoformat(),
-                "end": datetime.fromtimestamp(end_time / 1000).isoformat(),
+                "start": datetime.fromtimestamp(start_ts / 1000).isoformat(),
+                "end": datetime.fromtimestamp(end_ts / 1000).isoformat(),
                 "hours": hours,
             },
             "searchTerm": search_term,
@@ -75,8 +81,8 @@ class CloudWatchLogsCorrelationTools:
             # Start the query
             start_query_response = self.logs_client.start_query(
                 logGroupName=log_group_name,
-                startTime=start_time,
-                endTime=end_time,
+                startTime=start_ts,
+                endTime=end_ts,
                 queryString=query,
             )
 
@@ -91,7 +97,7 @@ class CloudWatchLogsCorrelationTools:
                 # Avoid long-running queries
                 if response["status"] == "Running":
                     # Check if we've been running too long (30 seconds)
-                    if time.time() * 1000 - end_time > 30000:
+                    if time.time() * 1000 - end_ts > 30000:
                         response = {"status": "Timeout", "results": []}
                         break
 

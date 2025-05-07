@@ -217,103 +217,137 @@ async def list_log_groups(
 
 
 @mcp.tool()
-async def search_logs(log_group_name: str, query: str, hours: int = 24) -> str:
+async def search_logs(
+    log_group_name: str,
+    query: str,
+    hours: int = 24,
+    start_time: str = None,
+    end_time: str = None,
+) -> str:
     """
     Search logs using CloudWatch Logs Insights query.
-
     Args:
         log_group_name: The log group to search
         query: CloudWatch Logs Insights query syntax
         hours: Number of hours to look back
-
+        start_time: Optional ISO8601 start time
+        end_time: Optional ISO8601 end time
     Returns:
         JSON string with search results
     """
-    return await search_tools.search_logs(log_group_name, query, hours)
+    return await search_tools.search_logs(
+        log_group_name, query, hours, start_time, end_time
+    )
 
 
 @mcp.tool()
 async def search_logs_multi(
-    log_group_names: List[str], query: str, hours: int = 24
+    log_group_names: List[str],
+    query: str,
+    hours: int = 24,
+    start_time: str = None,
+    end_time: str = None,
 ) -> str:
     """
     Search logs across multiple log groups using CloudWatch Logs Insights.
-    
     Args:
         log_group_names: List of log groups to search
         query: CloudWatch Logs Insights query in Logs Insights syntax
         hours: Number of hours to look back (default: 24)
-    
+        start_time: Optional ISO8601 start time
+        end_time: Optional ISO8601 end time
     Returns:
         JSON string with search results
     """
-    return await search_tools.search_logs_multi(log_group_names, query, hours)
+    return await search_tools.search_logs_multi(
+        log_group_names, query, hours, start_time, end_time
+    )
 
 
 @mcp.tool()
 async def filter_log_events(
-    log_group_name: str, filter_pattern: str, hours: int = 24
+    log_group_name: str,
+    filter_pattern: str,
+    hours: int = 24,
+    start_time: str = None,
+    end_time: str = None,
 ) -> str:
     """
     Filter log events by pattern across all streams in a log group.
-
     Args:
         log_group_name: The log group to filter
         filter_pattern: The pattern to search for (CloudWatch Logs filter syntax)
         hours: Number of hours to look back
-
+        start_time: Optional ISO8601 start time
+        end_time: Optional ISO8601 end time
     Returns:
         JSON string with filtered events
     """
-    return await search_tools.filter_log_events(log_group_name, filter_pattern, hours)
+    return await search_tools.filter_log_events(
+        log_group_name, filter_pattern, hours, start_time, end_time
+    )
 
 
 @mcp.tool()
-async def summarize_log_activity(log_group_name: str, hours: int = 24) -> str:
+async def summarize_log_activity(
+    log_group_name: str, hours: int = 24, start_time: str = None, end_time: str = None
+) -> str:
     """
     Generate a summary of log activity over a specified time period.
-
     Args:
         log_group_name: The log group to analyze
         hours: Number of hours to look back
-
+        start_time: Optional ISO8601 start time
+        end_time: Optional ISO8601 end time
     Returns:
         JSON string with activity summary
     """
-    return await analysis_tools.summarize_log_activity(log_group_name, hours)
+    return await analysis_tools.summarize_log_activity(
+        log_group_name, hours, start_time, end_time
+    )
 
 
 @mcp.tool()
-async def find_error_patterns(log_group_name: str, hours: int = 24) -> str:
+async def find_error_patterns(
+    log_group_name: str, hours: int = 24, start_time: str = None, end_time: str = None
+) -> str:
     """
     Find common error patterns in logs.
-
     Args:
         log_group_name: The log group to analyze
         hours: Number of hours to look back
-
+        start_time: Optional ISO8601 start time
+        end_time: Optional ISO8601 end time
     Returns:
         JSON string with error patterns
     """
-    return await analysis_tools.find_error_patterns(log_group_name, hours)
+    return await analysis_tools.find_error_patterns(
+        log_group_name, hours, start_time, end_time
+    )
 
 
 @mcp.tool()
 async def correlate_logs(
-    log_group_names: List[str], search_term: str, hours: int = 24
+    log_group_names: List[str],
+    search_term: str,
+    hours: int = 24,
+    start_time: str = None,
+    end_time: str = None,
 ) -> str:
     """
     Correlate logs across multiple AWS services using a common search term.
-
     Args:
         log_group_names: List of log group names to search
         search_term: Term to search for in logs (request ID, transaction ID, etc.)
         hours: Number of hours to look back
-
+        start_time: Optional ISO8601 start time
+        end_time: Optional ISO8601 end time
     Returns:
         JSON string with correlated events
     """
-    return await correlation_tools.correlate_logs(log_group_names, search_term, hours)
+    return await correlation_tools.correlate_logs(
+        log_group_names, search_term, hours, start_time, end_time
+    )
 
 
 if __name__ == "__main__":

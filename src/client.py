@@ -119,6 +119,12 @@ search_parser.add_argument(
 search_parser.add_argument(
     "--hours", type=int, default=24, help="Number of hours to look back (default: 24)"
 )
+search_parser.add_argument(
+    "--start-time", type=str, help="Start time (ISO8601, e.g. 2024-06-01T00:00:00Z)"
+)
+search_parser.add_argument(
+    "--end-time", type=str, help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z)"
+)
 
 # Search multiple log groups command
 search_multi_parser = subparsers.add_parser(
@@ -133,6 +139,12 @@ search_multi_parser.add_argument(
 search_multi_parser.add_argument(
     "--hours", type=int, default=24, help="Number of hours to look back (default: 24)"
 )
+search_multi_parser.add_argument(
+    "--start-time", type=str, help="Start time (ISO8601, e.g. 2024-06-01T00:00:00Z)"
+)
+search_multi_parser.add_argument(
+    "--end-time", type=str, help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z)"
+)
 
 # Summarize log activity command
 summarize_parser = subparsers.add_parser(
@@ -143,6 +155,12 @@ summarize_parser.add_argument(
 )
 summarize_parser.add_argument(
     "--hours", type=int, default=24, help="Number of hours to look back (default: 24)"
+)
+summarize_parser.add_argument(
+    "--start-time", type=str, help="Start time (ISO8601, e.g. 2024-06-01T00:00:00Z)"
+)
+summarize_parser.add_argument(
+    "--end-time", type=str, help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z)"
 )
 
 # Find error patterns command
@@ -155,6 +173,12 @@ errors_parser.add_argument(
 errors_parser.add_argument(
     "--hours", type=int, default=24, help="Number of hours to look back (default: 24)"
 )
+errors_parser.add_argument(
+    "--start-time", type=str, help="Start time (ISO8601, e.g. 2024-06-01T00:00:00Z)"
+)
+errors_parser.add_argument(
+    "--end-time", type=str, help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z)"
+)
 
 # Correlate logs command
 correlate_parser = subparsers.add_parser(
@@ -166,6 +190,12 @@ correlate_parser.add_argument(
 correlate_parser.add_argument("search_term", help="Term to search for in logs")
 correlate_parser.add_argument(
     "--hours", type=int, default=24, help="Number of hours to look back (default: 24)"
+)
+correlate_parser.add_argument(
+    "--start-time", type=str, help="Start time (ISO8601, e.g. 2024-06-01T00:00:00Z)"
+)
+correlate_parser.add_argument(
+    "--end-time", type=str, help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z)"
 )
 
 
@@ -312,55 +342,85 @@ async def main():
                         print("No prompt received.")
 
                 elif args.command == "search":
+                    tool_args = {
+                        "log_group_name": args.log_group_name,
+                        "query": args.query,
+                    }
+                    if args.start_time:
+                        tool_args["start_time"] = args.start_time
+                    if args.end_time:
+                        tool_args["end_time"] = args.end_time
+                    if not (args.start_time or args.end_time):
+                        tool_args["hours"] = args.hours
                     result = await session.call_tool(
                         "search_logs",
-                        arguments={
-                            "log_group_name": args.log_group_name,
-                            "query": args.query,
-                            "hours": args.hours,
-                        },
+                        arguments=tool_args,
                     )
                     print_json_response(result)
 
                 elif args.command == "search-multi":
+                    tool_args = {
+                        "log_group_names": args.log_group_names,
+                        "query": args.query,
+                    }
+                    if args.start_time:
+                        tool_args["start_time"] = args.start_time
+                    if args.end_time:
+                        tool_args["end_time"] = args.end_time
+                    if not (args.start_time or args.end_time):
+                        tool_args["hours"] = args.hours
                     result = await session.call_tool(
                         "search_logs_multi",
-                        arguments={
-                            "log_group_names": args.log_group_names,
-                            "query": args.query,
-                            "hours": args.hours,
-                        },
+                        arguments=tool_args,
                     )
                     print_json_response(result)
 
                 elif args.command == "summarize":
+                    tool_args = {
+                        "log_group_name": args.log_group_name,
+                    }
+                    if args.start_time:
+                        tool_args["start_time"] = args.start_time
+                    if args.end_time:
+                        tool_args["end_time"] = args.end_time
+                    if not (args.start_time or args.end_time):
+                        tool_args["hours"] = args.hours
                     result = await session.call_tool(
                         "summarize_log_activity",
-                        arguments={
-                            "log_group_name": args.log_group_name,
-                            "hours": args.hours,
-                        },
+                        arguments=tool_args,
                     )
                     print_json_response(result)
 
                 elif args.command == "find-errors":
+                    tool_args = {
+                        "log_group_name": args.log_group_name,
+                    }
+                    if args.start_time:
+                        tool_args["start_time"] = args.start_time
+                    if args.end_time:
+                        tool_args["end_time"] = args.end_time
+                    if not (args.start_time or args.end_time):
+                        tool_args["hours"] = args.hours
                     result = await session.call_tool(
                         "find_error_patterns",
-                        arguments={
-                            "log_group_name": args.log_group_name,
-                            "hours": args.hours,
-                        },
+                        arguments=tool_args,
                     )
                     print_json_response(result)
 
                 elif args.command == "correlate":
+                    tool_args = {
+                        "log_group_names": args.log_group_names,
+                        "search_term": args.search_term,
+                    }
+                    if args.start_time:
+                        tool_args["start_time"] = args.start_time
+                    if args.end_time:
+                        tool_args["end_time"] = args.end_time
+                    if not (args.start_time or args.end_time):
+                        tool_args["hours"] = args.hours
                     result = await session.call_tool(
                         "correlate_logs",
-                        arguments={
-                            "log_group_names": args.log_group_names,
-                            "search_term": args.search_term,
-                            "hours": args.hours,
-                        },
+                        arguments=tool_args,
                     )
                     print_json_response(result)
 

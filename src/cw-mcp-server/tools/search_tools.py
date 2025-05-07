@@ -7,10 +7,11 @@ import asyncio
 import boto3
 import json
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import List
 
 from . import handle_exceptions
+from .utils import get_time_range
 
 
 class CloudWatchLogsSearchTools:
@@ -23,7 +24,12 @@ class CloudWatchLogsSearchTools:
 
     @handle_exceptions
     async def search_logs(
-        self, log_group_name: str, query: str, hours: int = 24
+        self,
+        log_group_name: str,
+        query: str,
+        hours: int = 24,
+        start_time: str = None,
+        end_time: str = None,
     ) -> str:
         """
         Search logs using CloudWatch Logs Insights query.
@@ -32,15 +38,24 @@ class CloudWatchLogsSearchTools:
             log_group_name: The log group to search
             query: CloudWatch Logs Insights query syntax
             hours: Number of hours to look back
+            start_time: Start time in ISO8601 format
+            end_time: End time in ISO8601 format
 
         Returns:
             JSON string with search results
         """
-        return await self.search_logs_multi([log_group_name], query, hours)
+        return await self.search_logs_multi(
+            [log_group_name], query, hours, start_time, end_time
+        )
 
     @handle_exceptions
     async def search_logs_multi(
-        self, log_group_names: List[str], query: str, hours: int = 24
+        self,
+        log_group_names: List[str],
+        query: str,
+        hours: int = 24,
+        start_time: str = None,
+        end_time: str = None,
     ) -> str:
         """
         Search logs across multiple log groups using CloudWatch Logs Insights query.
@@ -49,23 +64,21 @@ class CloudWatchLogsSearchTools:
             log_group_names: List of log groups to search
             query: CloudWatch Logs Insights query syntax
             hours: Number of hours to look back
+            start_time: Start time in ISO8601 format
+            end_time: End time in ISO8601 format
 
         Returns:
             JSON string with search results
         """
-        # Calculate time range
-        end_time = int(datetime.now().timestamp() * 1000)
-        start_time = int((datetime.now() - timedelta(hours=hours)).timestamp() * 1000)
-
+        start_ts, end_ts = get_time_range(hours, start_time, end_time)
         # Start the query
         start_query_response = self.logs_client.start_query(
             logGroupNames=log_group_names,
-            startTime=start_time,
-            endTime=end_time,
+            startTime=start_ts,
+            endTime=end_ts,
             queryString=query,
             limit=100,
         )
-
         query_id = start_query_response["queryId"]
 
         # Poll for query results
@@ -77,7 +90,7 @@ class CloudWatchLogsSearchTools:
             # Avoid long-running queries
             if response["status"] == "Running":
                 # Check if we've been running too long (30 seconds)
-                if time.time() * 1000 - end_time > 30000:
+                if time.time() * 1000 - end_ts > 30000:
                     return json.dumps(
                         {
                             "status": "Timeout",
@@ -104,7 +117,12 @@ class CloudWatchLogsSearchTools:
 
     @handle_exceptions
     async def filter_log_events(
-        self, log_group_name: str, filter_pattern: str, hours: int = 24
+        self,
+        log_group_name: str,
+        filter_pattern: str,
+        hours: int = 24,
+        start_time: str = None,
+        end_time: str = None,
     ) -> str:
         """
         Filter log events by pattern across all streams in a log group.
@@ -113,19 +131,18 @@ class CloudWatchLogsSearchTools:
             log_group_name: The log group to filter
             filter_pattern: The pattern to search for (CloudWatch Logs filter syntax)
             hours: Number of hours to look back
+            start_time: Start time in ISO8601 format
+            end_time: End time in ISO8601 format
 
         Returns:
             JSON string with filtered events
         """
-        # Calculate time range
-        end_time = int(datetime.now().timestamp() * 1000)
-        start_time = int((datetime.now() - timedelta(hours=hours)).timestamp() * 1000)
-
+        start_ts, end_ts = get_time_range(hours, start_time, end_time)
         response = self.logs_client.filter_log_events(
             logGroupName=log_group_name,
             filterPattern=filter_pattern,
-            startTime=start_time,
-            endTime=end_time,
+            startTime=start_ts,
+            endTime=end_ts,
             limit=100,
         )
 

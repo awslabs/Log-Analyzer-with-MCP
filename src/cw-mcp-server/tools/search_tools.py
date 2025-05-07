@@ -7,11 +7,11 @@ import asyncio
 import boto3
 import json
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import List
-import dateutil.parser
 
 from . import handle_exceptions
+from .utils import get_time_range
 
 
 class CloudWatchLogsSearchTools:
@@ -21,17 +21,6 @@ class CloudWatchLogsSearchTools:
         """Initialize the CloudWatch Logs client."""
         # Initialize boto3 CloudWatch Logs client using default credential chain
         self.logs_client = boto3.client("logs")
-
-    def _get_time_range(self, hours: int, start_time: str = None, end_time: str = None):
-        if start_time:
-            start_ts = int(dateutil.parser.isoparse(start_time).timestamp() * 1000)
-        else:
-            start_ts = int((datetime.now() - timedelta(hours=hours)).timestamp() * 1000)
-        if end_time:
-            end_ts = int(dateutil.parser.isoparse(end_time).timestamp() * 1000)
-        else:
-            end_ts = int(datetime.now().timestamp() * 1000)
-        return start_ts, end_ts
 
     @handle_exceptions
     async def search_logs(
@@ -81,7 +70,7 @@ class CloudWatchLogsSearchTools:
         Returns:
             JSON string with search results
         """
-        start_ts, end_ts = self._get_time_range(hours, start_time, end_time)
+        start_ts, end_ts = get_time_range(hours, start_time, end_time)
         # Start the query
         start_query_response = self.logs_client.start_query(
             logGroupNames=log_group_names,
@@ -148,7 +137,7 @@ class CloudWatchLogsSearchTools:
         Returns:
             JSON string with filtered events
         """
-        start_ts, end_ts = self._get_time_range(hours, start_time, end_time)
+        start_ts, end_ts = get_time_range(hours, start_time, end_time)
         response = self.logs_client.filter_log_events(
             logGroupName=log_group_name,
             filterPattern=filter_pattern,

@@ -6,10 +6,10 @@
 import asyncio
 import boto3
 import json
-from datetime import datetime, timedelta
-import dateutil.parser
+from datetime import datetime
 
 from . import handle_exceptions
+from .utils import get_time_range
 
 
 class CloudWatchLogsAnalysisTools:
@@ -19,17 +19,6 @@ class CloudWatchLogsAnalysisTools:
         """Initialize the CloudWatch Logs client."""
         # Initialize boto3 CloudWatch Logs client using default credential chain
         self.logs_client = boto3.client("logs")
-
-    def _get_time_range(self, hours: int, start_time: str = None, end_time: str = None):
-        if start_time:
-            start_ts = int(dateutil.parser.isoparse(start_time).timestamp() * 1000)
-        else:
-            start_ts = int((datetime.now() - timedelta(hours=hours)).timestamp() * 1000)
-        if end_time:
-            end_ts = int(dateutil.parser.isoparse(end_time).timestamp() * 1000)
-        else:
-            end_ts = int(datetime.now().timestamp() * 1000)
-        return start_ts, end_ts
 
     @handle_exceptions
     async def summarize_log_activity(
@@ -51,7 +40,7 @@ class CloudWatchLogsAnalysisTools:
         Returns:
             JSON string with activity summary
         """
-        start_ts, end_ts = self._get_time_range(hours, start_time, end_time)
+        start_ts, end_ts = get_time_range(hours, start_time, end_time)
 
         # Use CloudWatch Logs Insights to get a summary
         query = """
@@ -156,7 +145,7 @@ class CloudWatchLogsAnalysisTools:
         Returns:
             JSON string with error patterns
         """
-        start_ts, end_ts = self._get_time_range(hours, start_time, end_time)
+        start_ts, end_ts = get_time_range(hours, start_time, end_time)
 
         # Query for error logs
         error_query = """

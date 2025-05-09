@@ -14,10 +14,18 @@ from collections import Counter
 class CloudWatchLogsResource:
     """Resource class for handling CloudWatch Logs resources."""
 
-    def __init__(self):
-        """Initialize the CloudWatch Logs resource client."""
-        # Initialize boto3 CloudWatch Logs client using default credential chain
-        self.logs_client = boto3.client("logs")
+    def __init__(self, profile_name=None):
+        """Initialize the CloudWatch Logs resource client.
+        
+        Args:
+            profile_name: Optional AWS profile name to use for credentials
+        """
+        # Store the profile name for later use
+        self.profile_name = profile_name
+        
+        # Initialize boto3 CloudWatch Logs client using specified profile or default credential chain
+        session = boto3.Session(profile_name=profile_name)
+        self.logs_client = session.client("logs")
 
     def get_log_groups(
         self, prefix: str = None, limit: int = 50, next_token: str = None
@@ -85,7 +93,8 @@ class CloudWatchLogsResource:
                 retention = f"{log_group['retentionInDays']} days"
 
             # Get metrics for the log group
-            cloudwatch = boto3.client("cloudwatch")
+            session = boto3.Session(profile_name=self.profile_name)
+            cloudwatch = session.client("cloudwatch")
             end_time = datetime.utcnow()
             start_time = end_time - timedelta(days=1)
 
@@ -318,7 +327,8 @@ class CloudWatchLogsResource:
         """Get log volume metrics for a log group."""
         try:
             # Create CloudWatch client
-            cloudwatch = boto3.client("cloudwatch")
+            session = boto3.Session(profile_name=self.profile_name)
+            cloudwatch = session.client("cloudwatch")
 
             # Calculate start and end times
             end_time = datetime.utcnow()

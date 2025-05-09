@@ -20,6 +20,9 @@ class CloudWatchLogsResource:
         Args:
             profile_name: Optional AWS profile name to use for credentials
         """
+        # Store the profile name for later use
+        self.profile_name = profile_name
+        
         # Initialize boto3 CloudWatch Logs client using specified profile or default credential chain
         session = boto3.Session(profile_name=profile_name)
         self.logs_client = session.client("logs")
@@ -90,7 +93,7 @@ class CloudWatchLogsResource:
                 retention = f"{log_group['retentionInDays']} days"
 
             # Get metrics for the log group
-            session = boto3.Session(profile_name=getattr(self, 'profile_name', None))
+            session = boto3.Session(profile_name=self.profile_name)
             cloudwatch = session.client("cloudwatch")
             end_time = datetime.utcnow()
             start_time = end_time - timedelta(days=1)
@@ -324,7 +327,7 @@ class CloudWatchLogsResource:
         """Get log volume metrics for a log group."""
         try:
             # Create CloudWatch client
-            session = boto3.Session(profile_name=getattr(self, 'profile_name', None))
+            session = boto3.Session(profile_name=self.profile_name)
             cloudwatch = session.client("cloudwatch")
 
             # Calculate start and end times

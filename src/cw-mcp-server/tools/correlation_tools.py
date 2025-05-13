@@ -17,10 +17,16 @@ from .utils import get_time_range
 class CloudWatchLogsCorrelationTools:
     """Tools for correlating logs across multiple CloudWatch Log groups."""
 
-    def __init__(self):
-        """Initialize the CloudWatch Logs client."""
-        # Initialize boto3 CloudWatch Logs client using default credential chain
-        self.logs_client = boto3.client("logs")
+    def __init__(self, profile_name=None):
+        """Initialize the CloudWatch Logs client.
+        
+        Args:
+            profile_name: Optional AWS profile name to use for credentials
+        """
+        # Initialize boto3 CloudWatch Logs client using specified profile or default credential chain
+        self.profile_name = profile_name
+        session = boto3.Session(profile_name=profile_name)
+        self.logs_client = session.client("logs")
 
     @handle_exceptions
     async def correlate_logs(

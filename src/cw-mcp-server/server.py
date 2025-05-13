@@ -5,6 +5,7 @@
 
 import sys
 import os
+import argparse
 from typing import List
 
 from mcp.server.fastmcp import FastMCP
@@ -13,6 +14,11 @@ from tools.search_tools import CloudWatchLogsSearchTools
 from tools.analysis_tools import CloudWatchLogsAnalysisTools
 from tools.correlation_tools import CloudWatchLogsCorrelationTools
 
+# Parse command line arguments
+parser = argparse.ArgumentParser(description='CloudWatch Logs Analyzer MCP Server')
+parser.add_argument('--profile', type=str, help='AWS profile name to use for credentials')
+args, unknown = parser.parse_known_args()
+
 # Add the current directory to the path so we can import our modules
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)
@@ -20,11 +26,11 @@ sys.path.append(current_dir)
 # Create the MCP server for CloudWatch logs
 mcp = FastMCP("CloudWatch Logs Analyzer")
 
-# Initialize our resource and tools classes
-cw_resource = CloudWatchLogsResource()
-search_tools = CloudWatchLogsSearchTools()
-analysis_tools = CloudWatchLogsAnalysisTools()
-correlation_tools = CloudWatchLogsCorrelationTools()
+# Initialize our resource and tools classes with the specified AWS profile
+cw_resource = CloudWatchLogsResource(profile_name=args.profile)
+search_tools = CloudWatchLogsSearchTools(profile_name=args.profile)
+analysis_tools = CloudWatchLogsAnalysisTools(profile_name=args.profile)
+correlation_tools = CloudWatchLogsCorrelationTools(profile_name=args.profile)
 
 # ==============================
 # Resource Handlers

@@ -147,15 +147,17 @@ def analyze_log_structure(log_group_name: str) -> str:
 
 
 @mcp.prompt()
-def list_cloudwatch_log_groups(prefix: str = None) -> str:
+def list_cloudwatch_log_groups(prefix: str = None, profile: str = None) -> str:
     """
     Prompt for listing and exploring CloudWatch log groups.
 
     Args:
+        profile: AWS profile name to use for credentials
         prefix: Optional prefix to filter log groups by name
     """
     prefix_text = f" starting with '{prefix}'" if prefix else ""
-    return f"""I'll help you explore the CloudWatch log groups{prefix_text} in your AWS environment.
+    profile_text = f" and using profile '{profile}'" if profile else ""
+    return f"""I'll help you explore the CloudWatch log groups{prefix_text}{profile_text} in your AWS environment    
 
 First, I'll list the available log groups. For each log group, I can help you:
 
@@ -170,14 +172,16 @@ Let me know which log group you'd like to explore further, or if you'd like to r
 
 
 @mcp.prompt()
-def analyze_cloudwatch_logs(log_group_name: str) -> str:
+def analyze_cloudwatch_logs(log_group_name: str, profile: str = None) -> str:
     """
     Prompt for analyzing CloudWatch logs to help identify issues, patterns, and insights.
 
     Args:
+        profile: AWS profile name to use for credentials
         log_group_name: The name of the log group to analyze
     """
-    return f"""Please analyze the following CloudWatch logs from the {log_group_name} log group.
+    profile_text = f" using profile '{profile}'" if profile else ""
+    return f"""Please analyze the following CloudWatch logs from the {log_group_name} log group{profile_text}.
 
 First, I'll get you some information about the log group:
 1. Get the basic log group structure to understand the format of logs
@@ -206,12 +210,13 @@ Feel free to ask for additional context if needed, such as:
 
 @mcp.tool()
 async def list_log_groups(
-    prefix: str = None, limit: int = 50, next_token: str = None
+    prefix: str = None, profile: str = None, limit: int = 50, next_token: str = None
 ) -> str:
     """
     List available CloudWatch log groups with optional filtering by prefix.
 
     Args:
+        profile: AWS profile name to use for credentials
         prefix: Optional prefix to filter log groups by name
         limit: Maximum number of log groups to return (default: 50)
         next_token: Token for pagination to get the next set of results
@@ -219,6 +224,7 @@ async def list_log_groups(
     Returns:
         JSON string with log groups information
     """
+    cw_resource = CloudWatchLogsResource(profile_name=profile or args.profile)
     return cw_resource.get_log_groups(prefix, limit, next_token)
 
 
@@ -229,6 +235,7 @@ async def search_logs(
     hours: int = 24,
     start_time: str = None,
     end_time: str = None,
+    profile: str = None
 ) -> str:
     """
     Search logs using CloudWatch Logs Insights query.
@@ -241,6 +248,7 @@ async def search_logs(
     Returns:
         JSON string with search results
     """
+    search_tools = CloudWatchLogsSearchTools(profile_name=profile or args.profile)
     return await search_tools.search_logs(
         log_group_name, query, hours, start_time, end_time
     )
@@ -253,6 +261,7 @@ async def search_logs_multi(
     hours: int = 24,
     start_time: str = None,
     end_time: str = None,
+    profile: str = None
 ) -> str:
     """
     Search logs across multiple log groups using CloudWatch Logs Insights.
@@ -265,6 +274,7 @@ async def search_logs_multi(
     Returns:
         JSON string with search results
     """
+    search_tools = CloudWatchLogsSearchTools(profile_name=profile or args.profile)
     return await search_tools.search_logs_multi(
         log_group_names, query, hours, start_time, end_time
     )
@@ -277,6 +287,7 @@ async def filter_log_events(
     hours: int = 24,
     start_time: str = None,
     end_time: str = None,
+    profile: str = None
 ) -> str:
     """
     Filter log events by pattern across all streams in a log group.
@@ -289,6 +300,7 @@ async def filter_log_events(
     Returns:
         JSON string with filtered events
     """
+    search_tools = CloudWatchLogsSearchTools(profile_name=profile or args.profile)
     return await search_tools.filter_log_events(
         log_group_name, filter_pattern, hours, start_time, end_time
     )
@@ -296,7 +308,7 @@ async def filter_log_events(
 
 @mcp.tool()
 async def summarize_log_activity(
-    log_group_name: str, hours: int = 24, start_time: str = None, end_time: str = None
+    log_group_name: str, hours: int = 24, start_time: str = None, end_time: str = None, profile: str = None
 ) -> str:
     """
     Generate a summary of log activity over a specified time period.
@@ -308,6 +320,7 @@ async def summarize_log_activity(
     Returns:
         JSON string with activity summary
     """
+    analysis_tools = CloudWatchLogsAnalysisTools(profile_name=profile or args.profile)
     return await analysis_tools.summarize_log_activity(
         log_group_name, hours, start_time, end_time
     )
@@ -315,7 +328,7 @@ async def summarize_log_activity(
 
 @mcp.tool()
 async def find_error_patterns(
-    log_group_name: str, hours: int = 24, start_time: str = None, end_time: str = None
+    log_group_name: str, hours: int = 24, start_time: str = None, end_time: str = None, profile: str = None
 ) -> str:
     """
     Find common error patterns in logs.
@@ -327,6 +340,7 @@ async def find_error_patterns(
     Returns:
         JSON string with error patterns
     """
+    analysis_tools = CloudWatchLogsAnalysisTools(profile_name=profile or args.profile)
     return await analysis_tools.find_error_patterns(
         log_group_name, hours, start_time, end_time
     )
@@ -339,6 +353,7 @@ async def correlate_logs(
     hours: int = 24,
     start_time: str = None,
     end_time: str = None,
+    profile: str = None,
 ) -> str:
     """
     Correlate logs across multiple AWS services using a common search term.
@@ -351,6 +366,7 @@ async def correlate_logs(
     Returns:
         JSON string with correlated events
     """
+    correlation_tools = CloudWatchLogsCorrelationTools(profile_name=profile or args.profile)
     return await correlation_tools.correlate_logs(
         log_group_names, search_term, hours, start_time, end_time
     )

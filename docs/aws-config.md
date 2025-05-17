@@ -30,15 +30,28 @@ aws configure
 
 ## Using a Specific AWS Profile
 
-If you have multiple AWS profiles configured, you can specify which profile to use when starting the MCP server:
+1. **Server Start-up**
 
-```bash
-python src/cw-mcp-server/server.py --profile your-profile-name
-```
+   If you have multiple AWS profiles, choose one when you launch the MCP server:
+   
+   ```bash
+   python src/cw-mcp-server/server.py --profile your-profile-name
+   ```
 
-This is useful when you need to access CloudWatch logs in different AWS accounts or regions.
+2. **Per-Call Override**
+
+   Override the profile on individual AI prompts or tool calls:
+   
+   ```bash
+   Get a list of CloudWatch log groups using the "dev-account" profile.
+   ```
+
+   > Once you set a profile, the LLM keeps using it for follow-ups. Only specify a new profile when you need to switch accounts.
+
+
+This is handy for examining CloudWatch logs in different AWS accounts or regions.
 
 ## 🛡️ Required Permissions
 
 The MCP server requires permissions to access CloudWatch Logs. At minimum, ensure your IAM user or role has the following policies:
-- `CloudWatchLogsReadOnlyAccess` 
+- `CloudWatchLogsReadOnlyAccess`

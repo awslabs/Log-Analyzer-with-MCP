@@ -52,7 +52,7 @@ if you have issues with your configuration, then Amazon Q CLI will start (withou
 WARNING: Error reading global mcp config: expected value at line 9 column 19
 Please check to make sure config is correct. Discarding.
 ```
-You might also see timeout issues if it is struggling to find and downloaded the details you have configured in your mcp.json, for example:
+You might also see timeout issues if it is struggling to find and download the details you have configured in your mcp.json, for example:
 ```
 x mcp_server has failed to load:
 - Operation timed out: recv for initialization

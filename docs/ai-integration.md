@@ -22,6 +22,45 @@ To get Claude for Desktop and how to add an MCP server, access [this link](https
 }
 ```
 
+## 🤖 Amazon Q CLI Integration
+
+Amazon Q CLI acts as an MCP Client. To connect to MCP Servers and access the tools they surface, you need to create a configuration file called `mcp.json` in your Amazon Q configuration directory.
+
+Your directory structure should look like this:
+
+```bash
+~/.aws
+└── amazonq
+    ├── mcp.json
+    ├── profiles
+    ├── cache
+    ├── history
+    └── prompts
+```
+
+If `mcp.json` is empty, edit it to add this to your MCP Server configuration file:
+
+```json
+{
+  "mcpServers": {
+    "cw-mcp-server": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/path/to/Log-Analyzer-with-MCP/src/cw-mcp-server",
+        "run",
+        "server.py"
+      ]
+    }
+  }
+}
+```
+
+### Testing the configuration
+Every time you start Amazon Q CLI, it will attempt to load any configured MCP Servers. You should see output indicating that the MCP Server has been discovered and initialized.
+
+![image](https://github.com/user-attachments/assets/9acc1632-5a9a-4465-9fdc-a8464640f6a6)
+
 If you're running into issues, check out the [troubleshooting guide](./troubleshooting.md) or open a GitHub Issue. 
 
 ## 🔍 AI Assistant Capabilities
@@ -64,6 +103,7 @@ The server provides specialized prompts that AI assistants can use:
    ```
    Please analyze the following CloudWatch logs from the {log_group_name} log group.
    First, I'll get you some information about the log group...
+
    ```
 3. **Profile Override**:
    ```

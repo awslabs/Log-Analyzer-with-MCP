@@ -45,6 +45,23 @@ In this case, try checking the server logs as outlined in the settings
 
 then, click on the `Open Logs Folder` and open the `mcp-server-cw-mcp-server.log` file to see more details. 
 
+**Amazon Q CLI terminating request**:
+
+if you have issues with your configuration, then Amazon Q CLI will start (without any MCP Server Tools) with an error similar to:
+```
+WARNING: Error reading global mcp config: expected value at line 9 column 19
+Please check to make sure config is correct. Discarding.
+```
+You might also see timeout issues if it is struggling to find and downloaded the details you have configured in your mcp.json, for example:
+```
+x mcp_server has failed to load:
+- Operation timed out: recv for initilization
+- run with Q_LOG_LEVEL=trace and see $TMPDIR/qlog for detail
+x 0 of 1 mcp servers initilized
+```
+You can go to `$TMPDIR/qlog` to find various logs generated, and you can configure Q_LOG_LEVEL with either trace, debug, info, and warn configurations to get debug output to help you troubleshoot any issues you might run into.
+
+
 ## 🆘 Getting Help
 
 If you encounter issues not covered in this troubleshooting section, please:

@@ -52,12 +52,12 @@ if you have issues with your configuration, then Amazon Q CLI will start (withou
 WARNING: Error reading global mcp config: expected value at line 9 column 19
 Please check to make sure config is correct. Discarding.
 ```
-You might also see timeout issues if it is struggling to find and downloaded the details you have configured in your mcp.json, for example:
+You might also see timeout issues if it is struggling to find and download the details you have configured in your mcp.json, for example:
 ```
 x mcp_server has failed to load:
-- Operation timed out: recv for initilization
+- Operation timed out: recv for initialization
 - run with Q_LOG_LEVEL=trace and see $TMPDIR/qlog for detail
-x 0 of 1 mcp servers initilized
+x 0 of 1 mcp servers initialized
 ```
 You can go to `$TMPDIR/qlog` to find various logs generated, and you can configure Q_LOG_LEVEL with either trace, debug, info, and warn configurations to get debug output to help you troubleshoot any issues you might run into.
 

@@ -49,7 +49,7 @@ aws configure
    > Once you set a profile, the LLM keeps using it for follow-ups. Only specify a new profile when you need to switch accounts.
 
 
-This is handy for examining CloudWatch logs in different AWS accounts or regions.
+This is useful when you need to access CloudWatch logs in different AWS accounts or regions.
 
 ## 🛡️ Required Permissions
 

@@ -103,7 +103,6 @@ The server provides specialized prompts that AI assistants can use:
    ```
    Please analyze the following CloudWatch logs from the {log_group_name} log group.
    First, I'll get you some information about the log group...
-
    ```
 3. **Profile Override**:
    ```

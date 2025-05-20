@@ -42,11 +42,9 @@ aws configure
 
    Override the profile on individual AI prompts or tool calls:
    
-   ```bash
-   Get a list of CloudWatch log groups using the "dev-account" profile.
-   ```
+   > Example: Get a list of CloudWatch log groups using the "dev-account" profile.
 
-   > Once you set a profile, the LLM keeps using it for follow-ups. Only specify a new profile when you need to switch accounts.
+   Once you set a profile, the LLM keeps using it for follow-ups. Only specify a new profile when you need to switch accounts.
 
 
 This is useful when you need to access CloudWatch logs in different AWS accounts or regions.

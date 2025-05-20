@@ -152,8 +152,8 @@ def list_cloudwatch_log_groups(prefix: str = None, profile: str = None) -> str:
     Prompt for listing and exploring CloudWatch log groups.
 
     Args:
-        profile: AWS profile name to use for credentials
         prefix: Optional prefix to filter log groups by name
+        profile: AWS profile name to use for credentials
     """
     prefix_text = f" starting with '{prefix}'" if prefix else ""
     profile_text = f" and using profile '{profile}'" if profile else ""
@@ -177,8 +177,8 @@ def analyze_cloudwatch_logs(log_group_name: str, profile: str = None) -> str:
     Prompt for analyzing CloudWatch logs to help identify issues, patterns, and insights.
 
     Args:
-        profile: AWS profile name to use for credentials
         log_group_name: The name of the log group to analyze
+        profile: AWS profile name to use for credentials
     """
     profile_text = f" using profile '{profile}'" if profile else ""
     return f"""Please analyze the following CloudWatch logs from the {log_group_name} log group{profile_text}.
@@ -210,16 +210,16 @@ Feel free to ask for additional context if needed, such as:
 
 @mcp.tool()
 async def list_log_groups(
-    prefix: str = None, profile: str = None, limit: int = 50, next_token: str = None
+    prefix: str = None, limit: int = 50, next_token: str = None, profile: str = None
 ) -> str:
     """
     List available CloudWatch log groups with optional filtering by prefix.
 
     Args:
-        profile: AWS profile name to use for credentials
         prefix: Optional prefix to filter log groups by name
         limit: Maximum number of log groups to return (default: 50)
         next_token: Token for pagination to get the next set of results
+        profile: AWS profile name to use for credentials
 
     Returns:
         JSON string with log groups information
@@ -245,6 +245,7 @@ async def search_logs(
         hours: Number of hours to look back
         start_time: Optional ISO8601 start time
         end_time: Optional ISO8601 end time
+        profile: AWS profile name to use for credentials
     Returns:
         JSON string with search results
     """
@@ -271,6 +272,7 @@ async def search_logs_multi(
         hours: Number of hours to look back (default: 24)
         start_time: Optional ISO8601 start time
         end_time: Optional ISO8601 end time
+        profile: AWS profile name to use for credentials
     Returns:
         JSON string with search results
     """
@@ -297,6 +299,7 @@ async def filter_log_events(
         hours: Number of hours to look back
         start_time: Optional ISO8601 start time
         end_time: Optional ISO8601 end time
+        profile: AWS profile name to use for credentials
     Returns:
         JSON string with filtered events
     """
@@ -317,6 +320,7 @@ async def summarize_log_activity(
         hours: Number of hours to look back
         start_time: Optional ISO8601 start time
         end_time: Optional ISO8601 end time
+        profile: AWS profile name to use for credentials
     Returns:
         JSON string with activity summary
     """
@@ -337,6 +341,7 @@ async def find_error_patterns(
         hours: Number of hours to look back
         start_time: Optional ISO8601 start time
         end_time: Optional ISO8601 end time
+        profile: AWS profile name to use for credentials
     Returns:
         JSON string with error patterns
     """
@@ -363,6 +368,7 @@ async def correlate_logs(
         hours: Number of hours to look back
         start_time: Optional ISO8601 start time
         end_time: Optional ISO8601 end time
+        profile: AWS profile name to use for credentials
     Returns:
         JSON string with correlated events
     """

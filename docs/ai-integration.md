@@ -87,7 +87,7 @@ With the enhanced tool support, AI assistants can now:
    - "Find correlations between errors in my database and API logs"
    - "Analyze the trend of timeouts in my Lambda function"
 
->If you want to use different aws profile, just mention the profile name with your prompt - `"Show me all my CloudWatch log groups using <profile_name> profile"`
+>If you want to use a different AWS profile, just mention the profile name with your prompt - `"Show me all my CloudWatch log groups using <profile_name> profile"`
 
 ## 💬 AI Prompt Templates
 

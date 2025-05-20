@@ -36,6 +36,8 @@ search_tools = CloudWatchLogsSearchTools(profile_name=args.profile)
 analysis_tools = CloudWatchLogsAnalysisTools(profile_name=args.profile)
 correlation_tools = CloudWatchLogsCorrelationTools(profile_name=args.profile)
 
+# Capture the parsed CLI profile in a separate variable
+default_profile = args.profile
 
 # Helper decorator to handle profile parameter for tools
 def with_profile(tool_class: Type, method_name: Optional[str] = None) -> Callable:
@@ -52,7 +54,7 @@ def with_profile(tool_class: Type, method_name: Optional[str] = None) -> Callabl
         @wraps(func)
         async def wrapper(*args, **kwargs) -> Any:
             try:
-                profile = kwargs.pop("profile", None) or args.profile
+                profile = kwargs.pop("profile", None) or default_profile
                 tool_instance = tool_class(profile_name=profile)
                 target_method = method_name or func.__name__
                 method = getattr(tool_instance, target_method)

@@ -14,7 +14,9 @@ from mcp.client.stdio import stdio_client
 
 # Set up argument parser for the CLI
 parser = argparse.ArgumentParser(description="CloudWatch Logs MCP Client")
-parser.add_argument("--profile", type=str, help="AWS profile name to use for credentials")
+parser.add_argument(
+    "--profile", type=str, help="AWS profile name to use for credentials"
+)
 subparsers = parser.add_subparsers(dest="command", help="Command to execute")
 
 # List log groups command
@@ -214,9 +216,7 @@ async def main():
         server_args.extend(["--profile", args.profile])
 
     # Create server parameters
-    server_params = StdioServerParameters(
-        command="python3", args=server_args, env=None
-    )
+    server_params = StdioServerParameters(command="python3", args=server_args, env=None)
 
     # Connect to the server
     async with stdio_client(server_params) as (read, write):

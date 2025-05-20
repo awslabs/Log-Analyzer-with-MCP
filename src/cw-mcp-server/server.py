@@ -6,7 +6,9 @@
 import sys
 import os
 import argparse
-from typing import List
+from typing import List, Callable, Any, Type, Optional
+from functools import wraps
+import asyncio
 
 from mcp.server.fastmcp import FastMCP
 from resources.cloudwatch_logs_resource import CloudWatchLogsResource
@@ -15,8 +17,10 @@ from tools.analysis_tools import CloudWatchLogsAnalysisTools
 from tools.correlation_tools import CloudWatchLogsCorrelationTools
 
 # Parse command line arguments
-parser = argparse.ArgumentParser(description='CloudWatch Logs Analyzer MCP Server')
-parser.add_argument('--profile', type=str, help='AWS profile name to use for credentials')
+parser = argparse.ArgumentParser(description="CloudWatch Logs Analyzer MCP Server")
+parser.add_argument(
+    "--profile", type=str, help="AWS profile name to use for credentials"
+)
 args, unknown = parser.parse_known_args()
 
 # Add the current directory to the path so we can import our modules
@@ -31,6 +35,44 @@ cw_resource = CloudWatchLogsResource(profile_name=args.profile)
 search_tools = CloudWatchLogsSearchTools(profile_name=args.profile)
 analysis_tools = CloudWatchLogsAnalysisTools(profile_name=args.profile)
 correlation_tools = CloudWatchLogsCorrelationTools(profile_name=args.profile)
+
+
+# Helper decorator to handle profile parameter for tools
+def with_profile(tool_class: Type, method_name: Optional[str] = None) -> Callable:
+    """
+    Decorator that handles the profile parameter for tool functions.
+    Creates a new instance of the specified tool class with the correct profile.
+
+    Args:
+        tool_class: The class to instantiate with the profile
+        method_name: Optional method name if different from the decorated function
+    """
+
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        async def wrapper(*args, **kwargs) -> Any:
+            try:
+                profile = kwargs.pop("profile", None) or args.profile
+                tool_instance = tool_class(profile_name=profile)
+                target_method = method_name or func.__name__
+                method = getattr(tool_instance, target_method)
+                result = method(**kwargs)
+                if asyncio.iscoroutine(result):
+                    return await result
+                return result
+            except AttributeError as e:
+                raise RuntimeError(
+                    f"Method {target_method} not found in {tool_class.__name__}"
+                ) from e
+            except Exception as e:
+                raise RuntimeError(
+                    f"An error occurred while executing {target_method} in {tool_class.__name__}"
+                ) from e
+
+        return wrapper
+
+    return decorator
+
 
 # ==============================
 # Resource Handlers
@@ -209,6 +251,7 @@ Feel free to ask for additional context if needed, such as:
 
 
 @mcp.tool()
+@with_profile(CloudWatchLogsResource, method_name="get_log_groups")
 async def list_log_groups(
     prefix: str = None, limit: int = 50, next_token: str = None, profile: str = None
 ) -> str:
@@ -224,18 +267,19 @@ async def list_log_groups(
     Returns:
         JSON string with log groups information
     """
-    cw_resource = CloudWatchLogsResource(profile_name=profile or args.profile)
-    return cw_resource.get_log_groups(prefix, limit, next_token)
+    # Function body is handled by the decorator
+    pass
 
 
 @mcp.tool()
+@with_profile(CloudWatchLogsSearchTools)
 async def search_logs(
     log_group_name: str,
     query: str,
     hours: int = 24,
     start_time: str = None,
     end_time: str = None,
-    profile: str = None
+    profile: str = None,
 ) -> str:
     """
     Search logs using CloudWatch Logs Insights query.
@@ -249,20 +293,19 @@ async def search_logs(
     Returns:
         JSON string with search results
     """
-    search_tools = CloudWatchLogsSearchTools(profile_name=profile or args.profile)
-    return await search_tools.search_logs(
-        log_group_name, query, hours, start_time, end_time
-    )
+    # Function body is handled by the decorator
+    pass
 
 
 @mcp.tool()
+@with_profile(CloudWatchLogsSearchTools)
 async def search_logs_multi(
     log_group_names: List[str],
     query: str,
     hours: int = 24,
     start_time: str = None,
     end_time: str = None,
-    profile: str = None
+    profile: str = None,
 ) -> str:
     """
     Search logs across multiple log groups using CloudWatch Logs Insights.
@@ -276,20 +319,19 @@ async def search_logs_multi(
     Returns:
         JSON string with search results
     """
-    search_tools = CloudWatchLogsSearchTools(profile_name=profile or args.profile)
-    return await search_tools.search_logs_multi(
-        log_group_names, query, hours, start_time, end_time
-    )
+    # Function body is handled by the decorator
+    pass
 
 
 @mcp.tool()
+@with_profile(CloudWatchLogsSearchTools)
 async def filter_log_events(
     log_group_name: str,
     filter_pattern: str,
     hours: int = 24,
     start_time: str = None,
     end_time: str = None,
-    profile: str = None
+    profile: str = None,
 ) -> str:
     """
     Filter log events by pattern across all streams in a log group.
@@ -303,15 +345,18 @@ async def filter_log_events(
     Returns:
         JSON string with filtered events
     """
-    search_tools = CloudWatchLogsSearchTools(profile_name=profile or args.profile)
-    return await search_tools.filter_log_events(
-        log_group_name, filter_pattern, hours, start_time, end_time
-    )
+    # Function body is handled by the decorator
+    pass
 
 
 @mcp.tool()
+@with_profile(CloudWatchLogsAnalysisTools)
 async def summarize_log_activity(
-    log_group_name: str, hours: int = 24, start_time: str = None, end_time: str = None, profile: str = None
+    log_group_name: str,
+    hours: int = 24,
+    start_time: str = None,
+    end_time: str = None,
+    profile: str = None,
 ) -> str:
     """
     Generate a summary of log activity over a specified time period.
@@ -324,15 +369,18 @@ async def summarize_log_activity(
     Returns:
         JSON string with activity summary
     """
-    analysis_tools = CloudWatchLogsAnalysisTools(profile_name=profile or args.profile)
-    return await analysis_tools.summarize_log_activity(
-        log_group_name, hours, start_time, end_time
-    )
+    # Function body is handled by the decorator
+    pass
 
 
 @mcp.tool()
+@with_profile(CloudWatchLogsAnalysisTools)
 async def find_error_patterns(
-    log_group_name: str, hours: int = 24, start_time: str = None, end_time: str = None, profile: str = None
+    log_group_name: str,
+    hours: int = 24,
+    start_time: str = None,
+    end_time: str = None,
+    profile: str = None,
 ) -> str:
     """
     Find common error patterns in logs.
@@ -345,13 +393,12 @@ async def find_error_patterns(
     Returns:
         JSON string with error patterns
     """
-    analysis_tools = CloudWatchLogsAnalysisTools(profile_name=profile or args.profile)
-    return await analysis_tools.find_error_patterns(
-        log_group_name, hours, start_time, end_time
-    )
+    # Function body is handled by the decorator
+    pass
 
 
 @mcp.tool()
+@with_profile(CloudWatchLogsCorrelationTools)
 async def correlate_logs(
     log_group_names: List[str],
     search_term: str,
@@ -372,10 +419,8 @@ async def correlate_logs(
     Returns:
         JSON string with correlated events
     """
-    correlation_tools = CloudWatchLogsCorrelationTools(profile_name=profile or args.profile)
-    return await correlation_tools.correlate_logs(
-        log_group_names, search_term, hours, start_time, end_time
-    )
+    # Function body is handled by the decorator
+    pass
 
 
 if __name__ == "__main__":

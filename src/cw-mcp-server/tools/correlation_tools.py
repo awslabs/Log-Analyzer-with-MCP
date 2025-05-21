@@ -19,7 +19,7 @@ class CloudWatchLogsCorrelationTools:
 
     def __init__(self, profile_name=None):
         """Initialize the CloudWatch Logs client.
-        
+
         Args:
             profile_name: Optional AWS profile name to use for credentials
         """

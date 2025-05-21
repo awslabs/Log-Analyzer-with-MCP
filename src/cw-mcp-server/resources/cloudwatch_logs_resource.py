@@ -16,13 +16,13 @@ class CloudWatchLogsResource:
 
     def __init__(self, profile_name=None):
         """Initialize the CloudWatch Logs resource client.
-        
+
         Args:
             profile_name: Optional AWS profile name to use for credentials
         """
         # Store the profile name for later use
         self.profile_name = profile_name
-        
+
         # Initialize boto3 CloudWatch Logs client using specified profile or default credential chain
         session = boto3.Session(profile_name=profile_name)
         self.logs_client = session.client("logs")

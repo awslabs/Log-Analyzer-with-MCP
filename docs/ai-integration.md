@@ -87,6 +87,8 @@ With the enhanced tool support, AI assistants can now:
    - "Find correlations between errors in my database and API logs"
    - "Analyze the trend of timeouts in my Lambda function"
 
+>If you want to use a different AWS profile, just mention the profile name with your prompt - `"Show me all my CloudWatch log groups using <profile_name> profile"`
+
 ## 💬 AI Prompt Templates
 
 The server provides specialized prompts that AI assistants can use:
@@ -101,4 +103,8 @@ The server provides specialized prompts that AI assistants can use:
    ```
    Please analyze the following CloudWatch logs from the {log_group_name} log group.
    First, I'll get you some information about the log group...
-   ``` 
+   ```
+3. **Profile Override**:
+   ```
+   I'll help you list CloudWatch log groups using the <profile_name> profile. Let me do that for you:
+   ```

@@ -39,6 +39,7 @@ correlation_tools = CloudWatchLogsCorrelationTools(profile_name=args.profile)
 # Capture the parsed CLI profile in a separate variable
 default_profile = args.profile
 
+
 # Helper decorator to handle profile parameter for tools
 def with_profile(tool_class: Type, method_name: Optional[str] = None) -> Callable:
     """

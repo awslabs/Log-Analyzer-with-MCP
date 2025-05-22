@@ -85,6 +85,7 @@ class CloudWatchLogsCorrelationTools:
             """
 
             # Start the query
+            query_start_time = time.time()
             start_query_response = self.logs_client.start_query(
                 logGroupName=log_group_name,
                 startTime=start_ts,
@@ -102,8 +103,8 @@ class CloudWatchLogsCorrelationTools:
 
                 # Avoid long-running queries
                 if response["status"] == "Running":
-                    # Check if we've been running too long (30 seconds)
-                    if time.time() * 1000 - end_ts > 30000:
+                    # Check if we've been running too long (60 seconds)
+                    if time.time() - query_start_time > 60:
                         response = {"status": "Timeout", "results": []}
                         break
 

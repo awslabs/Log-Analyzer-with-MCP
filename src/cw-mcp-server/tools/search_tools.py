@@ -78,6 +78,7 @@ class CloudWatchLogsSearchTools:
         """
         start_ts, end_ts = get_time_range(hours, start_time, end_time)
         # Start the query
+        query_start_time = time.time()
         start_query_response = self.logs_client.start_query(
             logGroupNames=log_group_names,
             startTime=start_ts,
@@ -92,11 +93,12 @@ class CloudWatchLogsSearchTools:
         while response is None or response["status"] == "Running":
             await asyncio.sleep(1)  # Wait before checking again
             response = self.logs_client.get_query_results(queryId=query_id)
+            elapsed_time = time.time() - query_start_time
 
             # Avoid long-running queries
             if response["status"] == "Running":
-                # Check if we've been running too long (30 seconds)
-                if time.time() * 1000 - end_ts > 30000:
+                # Check if we've been running too long (60 seconds)
+                if elapsed_time > 60:
                     return json.dumps(
                         {
                             "status": "Timeout",

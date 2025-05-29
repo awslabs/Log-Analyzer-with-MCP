@@ -214,7 +214,7 @@ def list_cloudwatch_log_groups(
     """
     profile_text = f" using profile '{profile}'" if profile else ""
     region_text = f" in region '{region}'" if region else ""
-    prefix_text = f' with prefix "{prefix}"' if prefix else ""
+    prefix_text = f" with prefix '{prefix}'" if prefix else ""
 
     return f"""I'll help you explore the CloudWatch log groups in your AWS environment{profile_text}{region_text}.
 

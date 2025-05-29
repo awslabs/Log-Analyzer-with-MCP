@@ -257,17 +257,18 @@ correlate_parser.add_argument(
 correlate_parser.add_argument("--region", help="AWS region name to use for API calls")
 
 
+def add_aws_config_args(tool_args, args):
+    """Add profile and region arguments to tool calls if specified."""
+    if args.profile:
+        tool_args["profile"] = args.profile
+    if args.region:
+        tool_args["region"] = args.region
+    return tool_args
+
+
 async def main():
     """Main function to run the CloudWatch Logs MCP client."""
     args = parser.parse_args()
-
-    def add_aws_config_args(tool_args):
-        """Add profile and region arguments to tool calls if specified."""
-        if args.profile:
-            tool_args["profile"] = args.profile
-        if args.region:
-            tool_args["region"] = args.region
-        return tool_args
 
     # Determine the server path (relative or absolute)
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -306,7 +307,7 @@ async def main():
                             tool_args["limit"] = args.limit
                         if args.next_token:
                             tool_args["next_token"] = args.next_token
-                        tool_args = add_aws_config_args(tool_args)
+                        tool_args = add_aws_config_args(tool_args, args)
 
                         result = await session.call_tool(
                             "list_log_groups", arguments=tool_args
@@ -364,7 +365,7 @@ async def main():
                 elif args.command == "get-prompt":
                     # Get the analyze logs prompt from the server
                     arguments = {"log_group_name": args.log_group_name}
-                    arguments = add_aws_config_args(arguments)
+                    arguments = add_aws_config_args(arguments, args)
                     result = await session.get_prompt(
                         "analyze_cloudwatch_logs",
                         arguments=arguments,
@@ -392,7 +393,7 @@ async def main():
                     arguments = {}
                     if args.prefix:
                         arguments["prefix"] = args.prefix
-                    arguments = add_aws_config_args(arguments)
+                    arguments = add_aws_config_args(arguments, args)
 
                     # Get the list logs prompt from the server
                     result = await session.get_prompt(
@@ -427,7 +428,7 @@ async def main():
                         tool_args["end_time"] = args.end_time
                     if not (args.start_time or args.end_time):
                         tool_args["hours"] = args.hours
-                    tool_args = add_aws_config_args(tool_args)
+                    tool_args = add_aws_config_args(tool_args, args)
                     result = await session.call_tool(
                         "search_logs",
                         arguments=tool_args,
@@ -445,7 +446,7 @@ async def main():
                         tool_args["end_time"] = args.end_time
                     if not (args.start_time or args.end_time):
                         tool_args["hours"] = args.hours
-                    tool_args = add_aws_config_args(tool_args)
+                    tool_args = add_aws_config_args(tool_args, args)
                     result = await session.call_tool(
                         "search_logs_multi",
                         arguments=tool_args,
@@ -462,7 +463,7 @@ async def main():
                         tool_args["end_time"] = args.end_time
                     if not (args.start_time or args.end_time):
                         tool_args["hours"] = args.hours
-                    tool_args = add_aws_config_args(tool_args)
+                    tool_args = add_aws_config_args(tool_args, args)
                     result = await session.call_tool(
                         "summarize_log_activity",
                         arguments=tool_args,
@@ -479,7 +480,7 @@ async def main():
                         tool_args["end_time"] = args.end_time
                     if not (args.start_time or args.end_time):
                         tool_args["hours"] = args.hours
-                    tool_args = add_aws_config_args(tool_args)
+                    tool_args = add_aws_config_args(tool_args, args)
                     result = await session.call_tool(
                         "find_error_patterns",
                         arguments=tool_args,
@@ -497,7 +498,7 @@ async def main():
                         tool_args["end_time"] = args.end_time
                     if not (args.start_time or args.end_time):
                         tool_args["hours"] = args.hours
-                    tool_args = add_aws_config_args(tool_args)
+                    tool_args = add_aws_config_args(tool_args, args)
                     result = await session.call_tool(
                         "correlate_logs",
                         arguments=tool_args,

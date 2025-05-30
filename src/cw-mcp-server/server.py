@@ -21,6 +21,7 @@ parser = argparse.ArgumentParser(description="CloudWatch Logs Analyzer MCP Serve
 parser.add_argument(
     "--profile", type=str, help="AWS profile name to use for credentials"
 )
+parser.add_argument("--region", type=str, help="AWS region name to use for API calls")
 args, unknown = parser.parse_known_args()
 
 # Add the current directory to the path so we can import our modules
@@ -30,24 +31,31 @@ sys.path.append(current_dir)
 # Create the MCP server for CloudWatch logs
 mcp = FastMCP("CloudWatch Logs Analyzer")
 
-# Initialize our resource and tools classes with the specified AWS profile
-cw_resource = CloudWatchLogsResource(profile_name=args.profile)
-search_tools = CloudWatchLogsSearchTools(profile_name=args.profile)
-analysis_tools = CloudWatchLogsAnalysisTools(profile_name=args.profile)
-correlation_tools = CloudWatchLogsCorrelationTools(profile_name=args.profile)
+# Initialize our resource and tools classes with the specified AWS profile and region
+cw_resource = CloudWatchLogsResource(profile_name=args.profile, region_name=args.region)
+search_tools = CloudWatchLogsSearchTools(
+    profile_name=args.profile, region_name=args.region
+)
+analysis_tools = CloudWatchLogsAnalysisTools(
+    profile_name=args.profile, region_name=args.region
+)
+correlation_tools = CloudWatchLogsCorrelationTools(
+    profile_name=args.profile, region_name=args.region
+)
 
-# Capture the parsed CLI profile in a separate variable
+# Capture the parsed CLI profile and region in separate variables
 default_profile = args.profile
+default_region = args.region
 
 
-# Helper decorator to handle profile parameter for tools
-def with_profile(tool_class: Type, method_name: Optional[str] = None) -> Callable:
+# Helper decorator to handle profile and region parameters for tools
+def with_aws_config(tool_class: Type, method_name: Optional[str] = None) -> Callable:
     """
-    Decorator that handles the profile parameter for tool functions.
-    Creates a new instance of the specified tool class with the correct profile.
+    Decorator that handles the profile and region parameters for tool functions.
+    Creates a new instance of the specified tool class with the correct profile and region.
 
     Args:
-        tool_class: The class to instantiate with the profile
+        tool_class: The class to instantiate with the profile and region
         method_name: Optional method name if different from the decorated function
     """
 
@@ -56,7 +64,8 @@ def with_profile(tool_class: Type, method_name: Optional[str] = None) -> Callabl
         async def wrapper(*args, **kwargs) -> Any:
             try:
                 profile = kwargs.pop("profile", None) or default_profile
-                tool_instance = tool_class(profile_name=profile)
+                region = kwargs.pop("region", None) or default_region
+                tool_instance = tool_class(profile_name=profile, region_name=region)
                 target_method = method_name or func.__name__
                 method = getattr(tool_instance, target_method)
                 result = method(**kwargs)
@@ -192,21 +201,27 @@ def analyze_log_structure(log_group_name: str) -> str:
 
 
 @mcp.prompt()
-def list_cloudwatch_log_groups(prefix: str = None, profile: str = None) -> str:
+def list_cloudwatch_log_groups(
+    prefix: str = None, profile: str = None, region: str = None
+) -> str:
     """
     Prompt for listing and exploring CloudWatch log groups.
 
     Args:
         prefix: Optional prefix to filter log groups by name
         profile: Optional AWS profile name to use for credentials
+        region: Optional AWS region name to use for API calls
     """
-    prefix_text = f" starting with '{prefix}'" if prefix else ""
-    profile_text = f" and using profile '{profile}'" if profile else ""
-    return f"""I'll help you explore the CloudWatch log groups{prefix_text}{profile_text} in your AWS environment    
+    profile_text = f" using profile '{profile}'" if profile else ""
+    region_text = f" in region '{region}'" if region else ""
+    prefix_text = f" with prefix '{prefix}'" if prefix else ""
 
-First, I'll list the available log groups. For each log group, I can help you:
+    return f"""I'll help you explore the CloudWatch log groups in your AWS environment{profile_text}{region_text}.
 
-1. Examine its structure and format
+First, I'll list the available log groups{prefix_text}.
+
+For each log group, I can help you:
+1. Get detailed information about the group (retention, size, etc.)
 2. Check for recent errors or patterns
 3. View metrics like volume and activity
 4. Sample recent logs to understand the content
@@ -217,16 +232,21 @@ Let me know which log group you'd like to explore further, or if you'd like to r
 
 
 @mcp.prompt()
-def analyze_cloudwatch_logs(log_group_name: str, profile: str = None) -> str:
+def analyze_cloudwatch_logs(
+    log_group_name: str, profile: str = None, region: str = None
+) -> str:
     """
     Prompt for analyzing CloudWatch logs to help identify issues, patterns, and insights.
 
     Args:
         log_group_name: The name of the log group to analyze
         profile: Optional AWS profile name to use for credentials
+        region: Optional AWS region name to use for API calls
     """
     profile_text = f" using profile '{profile}'" if profile else ""
-    return f"""Please analyze the following CloudWatch logs from the {log_group_name} log group{profile_text}.
+    region_text = f" in region '{region}'" if region else ""
+
+    return f"""Please analyze the following CloudWatch logs from the {log_group_name} log group{profile_text}{region_text}.
 
 First, I'll get you some information about the log group:
 1. Get the basic log group structure to understand the format of logs
@@ -254,9 +274,13 @@ Feel free to ask for additional context if needed, such as:
 
 
 @mcp.tool()
-@with_profile(CloudWatchLogsResource, method_name="get_log_groups")
+@with_aws_config(CloudWatchLogsResource, method_name="get_log_groups")
 async def list_log_groups(
-    prefix: str = None, limit: int = 50, next_token: str = None, profile: str = None
+    prefix: str = None,
+    limit: int = 50,
+    next_token: str = None,
+    profile: str = None,
+    region: str = None,
 ) -> str:
     """
     List available CloudWatch log groups with optional filtering by prefix.
@@ -266,6 +290,7 @@ async def list_log_groups(
         limit: Maximum number of log groups to return (default: 50)
         next_token: Token for pagination to get the next set of results
         profile: Optional AWS profile name to use for credentials
+        region: Optional AWS region name to use for API calls
 
     Returns:
         JSON string with log groups information
@@ -275,7 +300,7 @@ async def list_log_groups(
 
 
 @mcp.tool()
-@with_profile(CloudWatchLogsSearchTools)
+@with_aws_config(CloudWatchLogsSearchTools)
 async def search_logs(
     log_group_name: str,
     query: str,
@@ -283,9 +308,11 @@ async def search_logs(
     start_time: str = None,
     end_time: str = None,
     profile: str = None,
+    region: str = None,
 ) -> str:
     """
     Search logs using CloudWatch Logs Insights query.
+
     Args:
         log_group_name: The log group to search
         query: CloudWatch Logs Insights query syntax
@@ -293,6 +320,8 @@ async def search_logs(
         start_time: Optional ISO8601 start time
         end_time: Optional ISO8601 end time
         profile: Optional AWS profile name to use for credentials
+        region: Optional AWS region name to use for API calls
+
     Returns:
         JSON string with search results
     """
@@ -301,7 +330,7 @@ async def search_logs(
 
 
 @mcp.tool()
-@with_profile(CloudWatchLogsSearchTools)
+@with_aws_config(CloudWatchLogsSearchTools)
 async def search_logs_multi(
     log_group_names: List[str],
     query: str,
@@ -309,9 +338,11 @@ async def search_logs_multi(
     start_time: str = None,
     end_time: str = None,
     profile: str = None,
+    region: str = None,
 ) -> str:
     """
     Search logs across multiple log groups using CloudWatch Logs Insights.
+
     Args:
         log_group_names: List of log groups to search
         query: CloudWatch Logs Insights query in Logs Insights syntax
@@ -319,6 +350,8 @@ async def search_logs_multi(
         start_time: Optional ISO8601 start time
         end_time: Optional ISO8601 end time
         profile: Optional AWS profile name to use for credentials
+        region: Optional AWS region name to use for API calls
+
     Returns:
         JSON string with search results
     """
@@ -327,7 +360,7 @@ async def search_logs_multi(
 
 
 @mcp.tool()
-@with_profile(CloudWatchLogsSearchTools)
+@with_aws_config(CloudWatchLogsSearchTools)
 async def filter_log_events(
     log_group_name: str,
     filter_pattern: str,
@@ -335,9 +368,11 @@ async def filter_log_events(
     start_time: str = None,
     end_time: str = None,
     profile: str = None,
+    region: str = None,
 ) -> str:
     """
     Filter log events by pattern across all streams in a log group.
+
     Args:
         log_group_name: The log group to filter
         filter_pattern: The pattern to search for (CloudWatch Logs filter syntax)
@@ -345,6 +380,8 @@ async def filter_log_events(
         start_time: Optional ISO8601 start time
         end_time: Optional ISO8601 end time
         profile: Optional AWS profile name to use for credentials
+        region: Optional AWS region name to use for API calls
+
     Returns:
         JSON string with filtered events
     """
@@ -353,22 +390,26 @@ async def filter_log_events(
 
 
 @mcp.tool()
-@with_profile(CloudWatchLogsAnalysisTools)
+@with_aws_config(CloudWatchLogsAnalysisTools)
 async def summarize_log_activity(
     log_group_name: str,
     hours: int = 24,
     start_time: str = None,
     end_time: str = None,
     profile: str = None,
+    region: str = None,
 ) -> str:
     """
     Generate a summary of log activity over a specified time period.
+
     Args:
         log_group_name: The log group to analyze
         hours: Number of hours to look back
         start_time: Optional ISO8601 start time
         end_time: Optional ISO8601 end time
         profile: Optional AWS profile name to use for credentials
+        region: Optional AWS region name to use for API calls
+
     Returns:
         JSON string with activity summary
     """
@@ -377,22 +418,26 @@ async def summarize_log_activity(
 
 
 @mcp.tool()
-@with_profile(CloudWatchLogsAnalysisTools)
+@with_aws_config(CloudWatchLogsAnalysisTools)
 async def find_error_patterns(
     log_group_name: str,
     hours: int = 24,
     start_time: str = None,
     end_time: str = None,
     profile: str = None,
+    region: str = None,
 ) -> str:
     """
     Find common error patterns in logs.
+
     Args:
         log_group_name: The log group to analyze
         hours: Number of hours to look back
         start_time: Optional ISO8601 start time
         end_time: Optional ISO8601 end time
         profile: Optional AWS profile name to use for credentials
+        region: Optional AWS region name to use for API calls
+
     Returns:
         JSON string with error patterns
     """
@@ -401,7 +446,7 @@ async def find_error_patterns(
 
 
 @mcp.tool()
-@with_profile(CloudWatchLogsCorrelationTools)
+@with_aws_config(CloudWatchLogsCorrelationTools)
 async def correlate_logs(
     log_group_names: List[str],
     search_term: str,
@@ -409,9 +454,11 @@ async def correlate_logs(
     start_time: str = None,
     end_time: str = None,
     profile: str = None,
+    region: str = None,
 ) -> str:
     """
     Correlate logs across multiple AWS services using a common search term.
+
     Args:
         log_group_names: List of log group names to search
         search_term: Term to search for in logs (request ID, transaction ID, etc.)
@@ -419,6 +466,8 @@ async def correlate_logs(
         start_time: Optional ISO8601 start time
         end_time: Optional ISO8601 end time
         profile: Optional AWS profile name to use for credentials
+        region: Optional AWS region name to use for API calls
+
     Returns:
         JSON string with correlated events
     """

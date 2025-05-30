@@ -14,17 +14,19 @@ from collections import Counter
 class CloudWatchLogsResource:
     """Resource class for handling CloudWatch Logs resources."""
 
-    def __init__(self, profile_name=None):
+    def __init__(self, profile_name=None, region_name=None):
         """Initialize the CloudWatch Logs resource client.
 
         Args:
             profile_name: Optional AWS profile name to use for credentials
+            region_name: Optional AWS region name to use for API calls
         """
-        # Store the profile name for later use
+        # Store the profile name and region for later use
         self.profile_name = profile_name
+        self.region_name = region_name
 
-        # Initialize boto3 CloudWatch Logs client using specified profile or default credential chain
-        session = boto3.Session(profile_name=profile_name)
+        # Initialize boto3 CloudWatch Logs client using specified profile/region or default credential chain
+        session = boto3.Session(profile_name=profile_name, region_name=region_name)
         self.logs_client = session.client("logs")
 
     def get_log_groups(
@@ -93,7 +95,9 @@ class CloudWatchLogsResource:
                 retention = f"{log_group['retentionInDays']} days"
 
             # Get metrics for the log group
-            session = boto3.Session(profile_name=self.profile_name)
+            session = boto3.Session(
+                profile_name=self.profile_name, region_name=self.region_name
+            )
             cloudwatch = session.client("cloudwatch")
             end_time = datetime.utcnow()
             start_time = end_time - timedelta(days=1)
@@ -327,7 +331,9 @@ class CloudWatchLogsResource:
         """Get log volume metrics for a log group."""
         try:
             # Create CloudWatch client
-            session = boto3.Session(profile_name=self.profile_name)
+            session = boto3.Session(
+                profile_name=self.profile_name, region_name=self.region_name
+            )
             cloudwatch = session.client("cloudwatch")
 
             # Calculate start and end times

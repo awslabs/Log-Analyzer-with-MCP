@@ -28,24 +28,23 @@ You can set up your AWS credentials using the AWS CLI:
 aws configure
 ```
 
-## Using a Specific AWS Profile
+## Using a Specific AWS Profile or Region
 
 1. **Server Start-up**
 
-   If you have multiple AWS profiles, choose one when you launch the MCP server:
+   If you have multiple AWS profiles or want to specify a region, use:
    
    ```bash
-   python src/cw-mcp-server/server.py --profile your-profile-name
+   python src/cw-mcp-server/server.py --profile your-profile-name --region us-west-2
    ```
 
 2. **Per-Call Override**
 
-   Override the profile on individual AI prompts or tool calls:
+   Override the profile or region on individual AI prompts or tool calls:
    
-   > Example: Get a list of CloudWatch log groups using the "dev-account" profile.
+   > Example: Get a list of CloudWatch log groups using the "dev-account" profile in "eu-central-1" region.
 
-   Once you set a profile, the LLM keeps using it for follow-ups. Only specify a new profile when you need to switch accounts.
-
+   Once you set a profile or region, the LLM keeps using it for follow-ups. Only specify a new profile or region when you need to switch accounts or regions.
 
 This is useful when you need to access CloudWatch logs in different AWS accounts or regions.
 

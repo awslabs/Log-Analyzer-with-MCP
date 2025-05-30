@@ -9,7 +9,7 @@ AI assistants can leverage this MCP server. To understand more check out the [AI
 The MCP server exposes CloudWatch logs data and analysis tools to AI assistants and MCP clients:
 
 ```bash
-python src/cw-mcp-server/server.py
+python src/cw-mcp-server/server.py [--profile your-profile] [--region us-west-2]
 ```
 
 The server runs in the foreground by default. To run it in the background, you can use:
@@ -24,44 +24,46 @@ The project includes a command-line client for interacting with the MCP server:
 
 ```bash
 # List available log groups
-python src/client.py list-groups
+python src/client.py list-groups [--profile your-profile] [--region us-west-2]
 
 # List log groups with a prefix filter
-python src/client.py list-groups --prefix "/aws/lambda"
+python src/client.py list-groups --prefix "/aws/lambda" [--region us-west-2]
 
 # Use the tool interface instead of resource
-python src/client.py list-groups --use-tool
+python src/client.py list-groups --use-tool [--region us-west-2]
 
 # Get a prompt for exploring log groups
-python src/client.py list-prompt
+python src/client.py list-prompt [--region us-west-2]
 
 # List log streams in a specific log group
-python src/client.py list-streams "/aws/lambda/my-function"
+python src/client.py list-streams "/aws/lambda/my-function" [--region us-west-2]
 
 # Get log events from a specific stream
-python src/client.py get-events "/aws/lambda/my-function" "2023/06/01/[$LATEST]abcdef123456"
+python src/client.py get-events "/aws/lambda/my-function" "2023/06/01/[$LATEST]abcdef123456" [--region us-west-2]
 
 # Get a sample of recent logs
-python src/client.py sample "/aws/lambda/my-function"
+python src/client.py sample "/aws/lambda/my-function" [--region us-west-2]
 
 # Get recent errors
-python src/client.py recent-errors "/aws/lambda/my-function"
+python src/client.py recent-errors "/aws/lambda/my-function" [--region us-west-2]
 
 # Get log structure analysis
-python src/client.py structure "/aws/lambda/my-function"
+python src/client.py structure "/aws/lambda/my-function" [--region us-west-2]
 
 # Search logs for a specific pattern
-python src/client.py search "/aws/lambda/my-function" "filter @message like 'error'"
+python src/client.py search "/aws/lambda/my-function" "filter @message like 'error'" [--region us-west-2]
 
 # Generate a summary of log activity
-python src/client.py summarize "/aws/lambda/my-function" --hours 48
+python src/client.py summarize "/aws/lambda/my-function" --hours 48 [--region us-west-2]
 
 # Find common error patterns
-python src/client.py find-errors "/aws/lambda/my-function"
+python src/client.py find-errors "/aws/lambda/my-function" [--region us-west-2]
 
 # Correlate logs across multiple services
-python src/client.py correlate "/aws/lambda/service1" "/aws/lambda/service2" "OrderId: 12345"
+python src/client.py correlate "/aws/lambda/service1" "/aws/lambda/service2" "OrderId: 12345" [--region us-west-2]
 ```
+
+*You can use --profile and --region with any command to target a specific AWS account or region.*
 
 ## 🧩 Example Workflows
 
@@ -69,16 +71,16 @@ python src/client.py correlate "/aws/lambda/service1" "/aws/lambda/service2" "Or
 
 ```bash
 # 1. List your log groups to find the Lambda function
-python src/client.py list-groups --prefix "/aws/lambda"
+python src/client.py list-groups --prefix "/aws/lambda" [--region us-west-2]
 
 # 2. Generate a summary to see when errors occurred
-python src/client.py summarize "/aws/lambda/my-function" --hours 24
+python src/client.py summarize "/aws/lambda/my-function" --hours 24 [--region us-west-2]
 
 # 3. Find the most common error patterns
-python src/client.py find-errors "/aws/lambda/my-function"
+python src/client.py find-errors "/aws/lambda/my-function" [--region us-west-2]
 
 # 4. Search for details about a specific error
-python src/client.py search "/aws/lambda/my-function" "filter @message like 'ConnectionError'"
+python src/client.py search "/aws/lambda/my-function" "filter @message like 'ConnectionError'" [--region us-west-2]
 ```
 
 ### Correlating requests across microservices using the standalone server directly
@@ -89,7 +91,7 @@ python src/client.py correlate \
   "/aws/lambda/api-gateway" \
   "/aws/lambda/auth-service" \
   "/aws/lambda/payment-processor" \
-  "req-abc123"
+  "req-abc123" [--region us-west-2]
 ```
 
 ## 🔗 Resource URIs

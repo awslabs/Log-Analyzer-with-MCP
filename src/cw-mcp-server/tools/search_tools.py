@@ -17,15 +17,17 @@ from .utils import get_time_range
 class CloudWatchLogsSearchTools:
     """Tools for searching and querying CloudWatch Logs."""
 
-    def __init__(self, profile_name=None):
+    def __init__(self, profile_name=None, region_name=None):
         """Initialize the CloudWatch Logs client.
 
         Args:
             profile_name: Optional AWS profile name to use for credentials
+            region_name: Optional AWS region name to use for API calls
         """
-        # Initialize boto3 CloudWatch Logs client using specified profile or default credential chain
+        # Initialize boto3 CloudWatch Logs client using specified profile/region or default credential chain
         self.profile_name = profile_name
-        session = boto3.Session(profile_name=profile_name)
+        self.region_name = region_name
+        session = boto3.Session(profile_name=profile_name, region_name=region_name)
         self.logs_client = session.client("logs")
 
     @handle_exceptions

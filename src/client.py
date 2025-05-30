@@ -17,6 +17,7 @@ parser = argparse.ArgumentParser(description="CloudWatch Logs MCP Client")
 parser.add_argument(
     "--profile", type=str, help="AWS profile name to use for credentials"
 )
+parser.add_argument("--region", type=str, help="AWS region name to use for API calls")
 subparsers = parser.add_subparsers(dest="command", help="Command to execute")
 
 # List log groups command
@@ -36,18 +37,34 @@ list_groups_parser.add_argument(
 list_groups_parser.add_argument(
     "--use-tool", action="store_true", help="Use the tool interface instead of resource"
 )
+list_groups_parser.add_argument(
+    "--profile", help="AWS profile name to use for credentials"
+)
+list_groups_parser.add_argument("--region", help="AWS region name to use for API calls")
 
 # Get log group details command
 group_details_parser = subparsers.add_parser(
     "group-details", help="Get detailed information about a log group"
 )
 group_details_parser.add_argument("log_group_name", help="The name of the log group")
+group_details_parser.add_argument(
+    "--profile", help="AWS profile name to use for credentials"
+)
+group_details_parser.add_argument(
+    "--region", help="AWS region name to use for API calls"
+)
 
 # List log streams command
 list_streams_parser = subparsers.add_parser(
     "list-streams", help="List log streams for a specific log group"
 )
 list_streams_parser.add_argument("log_group_name", help="The name of the log group")
+list_streams_parser.add_argument(
+    "--profile", help="AWS profile name to use for credentials"
+)
+list_streams_parser.add_argument(
+    "--region", help="AWS region name to use for API calls"
+)
 
 # Get log events command
 get_events_parser = subparsers.add_parser(
@@ -55,6 +72,10 @@ get_events_parser = subparsers.add_parser(
 )
 get_events_parser.add_argument("log_group_name", help="The name of the log group")
 get_events_parser.add_argument("log_stream_name", help="The name of the log stream")
+get_events_parser.add_argument(
+    "--profile", help="AWS profile name to use for credentials"
+)
+get_events_parser.add_argument("--region", help="AWS region name to use for API calls")
 
 # Get log sample command
 sample_parser = subparsers.add_parser(
@@ -64,6 +85,8 @@ sample_parser.add_argument("log_group_name", help="The name of the log group")
 sample_parser.add_argument(
     "--limit", type=int, default=10, help="Number of logs to sample (default: 10)"
 )
+sample_parser.add_argument("--profile", help="AWS profile name to use for credentials")
+sample_parser.add_argument("--region", help="AWS region name to use for API calls")
 
 # Get recent errors command
 errors_parser = subparsers.add_parser(
@@ -75,6 +98,8 @@ errors_parser.add_argument(
 errors_parser.add_argument(
     "--hours", type=int, default=24, help="Number of hours to look back (default: 24)"
 )
+errors_parser.add_argument("--profile", help="AWS profile name to use for credentials")
+errors_parser.add_argument("--region", help="AWS region name to use for API calls")
 
 # Get log metrics command
 metrics_parser = subparsers.add_parser(
@@ -86,6 +111,8 @@ metrics_parser.add_argument(
 metrics_parser.add_argument(
     "--hours", type=int, default=24, help="Number of hours to look back (default: 24)"
 )
+metrics_parser.add_argument("--profile", help="AWS profile name to use for credentials")
+metrics_parser.add_argument("--region", help="AWS region name to use for API calls")
 
 # Analyze log structure command
 structure_parser = subparsers.add_parser(
@@ -94,6 +121,10 @@ structure_parser = subparsers.add_parser(
 structure_parser.add_argument(
     "log_group_name", help="The name of the log group to analyze"
 )
+structure_parser.add_argument(
+    "--profile", help="AWS profile name to use for credentials"
+)
+structure_parser.add_argument("--region", help="AWS region name to use for API calls")
 
 # Get analyze logs prompt command
 prompt_parser = subparsers.add_parser(
@@ -102,6 +133,8 @@ prompt_parser = subparsers.add_parser(
 prompt_parser.add_argument(
     "log_group_name", help="The name of the log group to analyze"
 )
+prompt_parser.add_argument("--profile", help="AWS profile name to use for credentials")
+prompt_parser.add_argument("--region", help="AWS region name to use for API calls")
 
 # Get list groups prompt command
 list_prompt_parser = subparsers.add_parser(
@@ -110,6 +143,10 @@ list_prompt_parser = subparsers.add_parser(
 list_prompt_parser.add_argument(
     "--prefix", help="Optional prefix to filter log groups by name"
 )
+list_prompt_parser.add_argument(
+    "--profile", help="AWS profile name to use for credentials"
+)
+list_prompt_parser.add_argument("--region", help="AWS region name to use for API calls")
 
 # Search logs command
 search_parser = subparsers.add_parser(
@@ -128,6 +165,8 @@ search_parser.add_argument(
 search_parser.add_argument(
     "--end-time", type=str, help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z)"
 )
+search_parser.add_argument("--profile", help="AWS profile name to use for credentials")
+search_parser.add_argument("--region", help="AWS region name to use for API calls")
 
 # Search multiple log groups command
 search_multi_parser = subparsers.add_parser(
@@ -148,6 +187,12 @@ search_multi_parser.add_argument(
 search_multi_parser.add_argument(
     "--end-time", type=str, help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z)"
 )
+search_multi_parser.add_argument(
+    "--profile", help="AWS profile name to use for credentials"
+)
+search_multi_parser.add_argument(
+    "--region", help="AWS region name to use for API calls"
+)
 
 # Summarize log activity command
 summarize_parser = subparsers.add_parser(
@@ -165,6 +210,10 @@ summarize_parser.add_argument(
 summarize_parser.add_argument(
     "--end-time", type=str, help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z)"
 )
+summarize_parser.add_argument(
+    "--profile", help="AWS profile name to use for credentials"
+)
+summarize_parser.add_argument("--region", help="AWS region name to use for API calls")
 
 # Find error patterns command
 errors_parser = subparsers.add_parser(
@@ -182,6 +231,8 @@ errors_parser.add_argument(
 errors_parser.add_argument(
     "--end-time", type=str, help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z)"
 )
+errors_parser.add_argument("--profile", help="AWS profile name to use for credentials")
+errors_parser.add_argument("--region", help="AWS region name to use for API calls")
 
 # Correlate logs command
 correlate_parser = subparsers.add_parser(
@@ -200,6 +251,19 @@ correlate_parser.add_argument(
 correlate_parser.add_argument(
     "--end-time", type=str, help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z)"
 )
+correlate_parser.add_argument(
+    "--profile", help="AWS profile name to use for credentials"
+)
+correlate_parser.add_argument("--region", help="AWS region name to use for API calls")
+
+
+def add_aws_config_args(tool_args, args):
+    """Add profile and region arguments to tool calls if specified."""
+    if args.profile:
+        tool_args["profile"] = args.profile
+    if args.region:
+        tool_args["region"] = args.region
+    return tool_args
 
 
 async def main():
@@ -214,6 +278,8 @@ async def main():
     server_args = [server_path]
     if args.profile:
         server_args.extend(["--profile", args.profile])
+    if args.region:
+        server_args.extend(["--region", args.region])
 
     # Create server parameters
     server_params = StdioServerParameters(command="python3", args=server_args, env=None)
@@ -241,6 +307,7 @@ async def main():
                             tool_args["limit"] = args.limit
                         if args.next_token:
                             tool_args["next_token"] = args.next_token
+                        tool_args = add_aws_config_args(tool_args, args)
 
                         result = await session.call_tool(
                             "list_log_groups", arguments=tool_args
@@ -297,9 +364,11 @@ async def main():
 
                 elif args.command == "get-prompt":
                     # Get the analyze logs prompt from the server
+                    arguments = {"log_group_name": args.log_group_name}
+                    arguments = add_aws_config_args(arguments, args)
                     result = await session.get_prompt(
                         "analyze_cloudwatch_logs",
-                        arguments={"log_group_name": args.log_group_name},
+                        arguments=arguments,
                     )
 
                     # Extract and print the prompt text
@@ -324,6 +393,7 @@ async def main():
                     arguments = {}
                     if args.prefix:
                         arguments["prefix"] = args.prefix
+                    arguments = add_aws_config_args(arguments, args)
 
                     # Get the list logs prompt from the server
                     result = await session.get_prompt(
@@ -358,6 +428,7 @@ async def main():
                         tool_args["end_time"] = args.end_time
                     if not (args.start_time or args.end_time):
                         tool_args["hours"] = args.hours
+                    tool_args = add_aws_config_args(tool_args, args)
                     result = await session.call_tool(
                         "search_logs",
                         arguments=tool_args,
@@ -375,6 +446,7 @@ async def main():
                         tool_args["end_time"] = args.end_time
                     if not (args.start_time or args.end_time):
                         tool_args["hours"] = args.hours
+                    tool_args = add_aws_config_args(tool_args, args)
                     result = await session.call_tool(
                         "search_logs_multi",
                         arguments=tool_args,
@@ -391,6 +463,7 @@ async def main():
                         tool_args["end_time"] = args.end_time
                     if not (args.start_time or args.end_time):
                         tool_args["hours"] = args.hours
+                    tool_args = add_aws_config_args(tool_args, args)
                     result = await session.call_tool(
                         "summarize_log_activity",
                         arguments=tool_args,
@@ -407,6 +480,7 @@ async def main():
                         tool_args["end_time"] = args.end_time
                     if not (args.start_time or args.end_time):
                         tool_args["hours"] = args.hours
+                    tool_args = add_aws_config_args(tool_args, args)
                     result = await session.call_tool(
                         "find_error_patterns",
                         arguments=tool_args,
@@ -424,6 +498,7 @@ async def main():
                         tool_args["end_time"] = args.end_time
                     if not (args.start_time or args.end_time):
                         tool_args["hours"] = args.hours
+                    tool_args = add_aws_config_args(tool_args, args)
                     result = await session.call_tool(
                         "correlate_logs",
                         arguments=tool_args,

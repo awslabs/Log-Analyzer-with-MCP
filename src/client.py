@@ -510,14 +510,18 @@ async def main():
                 sys.exit(1)
 
 
-def print_json_response(content: str):
+def print_json_response(content: str | tuple):
     """Print JSON content in a formatted way."""
     try:
+        # Handle if content is already a tuple (from read_resource)
+        if isinstance(content, tuple) and len(content) > 0:
+            content = content[0]
+
         # Parse the JSON content and print it in a pretty format
         parsed = json.loads(content)
         print(json.dumps(parsed, indent=2))
-    except json.JSONDecodeError:
-        # If it's not valid JSON, print it as is
+    except (json.JSONDecodeError, TypeError):
+        # If it's not valid JSON or not a string, print it as is
         print(content)
 
 

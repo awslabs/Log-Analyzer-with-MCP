@@ -15,7 +15,27 @@ MCP cw-mcp-server: Server Disconnected.
 ```
 Error: An error occurred (AccessDenied) when calling the DescribeLogGroups operation: Access denied
 ```
-Ensure your AWS credentials are properly configured and have the necessary permissions to access CloudWatch Logs.
+Ensure your AWS credentials are properly configured and have the necessary permissions to access CloudWatch Logs:
+
+1. Check if your credentials file exists:
+   ```bash
+   cat ~/.aws/credentials
+   ```
+
+2. Verify you have the required permissions (CloudWatchLogsReadOnlyAccess) for the assumed role you are using.
+
+3. If using temporary credentials, ensure your session token is included in your `~/.aws/credentials` file:
+   ```ini
+   [profile-name]
+   aws_access_key_id = your-temp-access-key
+   aws_secret_access_key = your-temp-secret-key
+   aws_session_token = your-session-token
+   ```
+
+4. Test your credentials directly with AWS CLI:
+   ```bash
+   aws cloudwatch list-metrics --namespace AWS/Logs
+   ```
 
 **Resource Not Found**:
 ```

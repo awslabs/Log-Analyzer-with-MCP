@@ -15,6 +15,21 @@ For the MCP server to access your AWS CloudWatch Logs, you need to configure AWS
    aws_access_key_id = your-access-key
    aws_secret_access_key = your-secret-key
    ```
+   
+   If you're seeing errors like `An error occurred (AccessDenied) when calling the DescribeLogGroups operation: Access denied`, make sure to add your credentials in this format:
+   ```ini
+   [default]
+   aws_access_key_id = your-access-key
+   aws_secret_access_key = your-secret-key
+   
+   # For temporary credentials, add the session token
+   [temp-profile]
+   aws_access_key_id = your-temp-access-key
+   aws_secret_access_key = your-temp-secret-key
+   aws_session_token = your-session-token
+   ```
+
+   Check out the [troubleshooting guide](./troubleshooting.md) for more information.
 
 3. **AWS config file** (`~/.aws/config`):
    ```ini

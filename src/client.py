@@ -510,18 +510,82 @@ async def main():
                 sys.exit(1)
 
 
-def print_json_response(content: str | tuple):
-    """Print JSON content in a formatted way."""
-    try:
-        # Handle if content is already a tuple (from read_resource)
-        if isinstance(content, tuple) and len(content) > 0:
-            content = content[0]
+def print_json_response(content: str | tuple | object | None):
+    """Print JSON content in a formatted way.
 
-        # Parse the JSON content and print it in a pretty format
-        parsed = json.loads(content)
-        print(json.dumps(parsed, indent=2))
-    except (json.JSONDecodeError, TypeError):
-        # If it's not valid JSON or not a string, print it as is
+    Args:
+        content: The content to print, which could be:
+            - String (direct JSON content)
+            - Tuple (from read_resource, where the first element is the content)
+            - Object with .content or .text attributes (from CallToolResult)
+            - None
+    """
+    try:
+        # Handle None case
+        if content is None:
+            print("No content received.")
+            return
+
+        # For Session.read_resource responses, which returns tuple (meta, content)
+        # but we found that sometimes content is None
+        if isinstance(content, tuple):
+            meta, content_text = (
+                content
+                if len(content) >= 2
+                else (content[0] if len(content) == 1 else None, None)
+            )
+
+            # If we have usable content in the second element, use it
+            if content_text is not None:
+                content = content_text
+            # Otherwise, if meta looks usable, try that
+            elif isinstance(meta, str) and meta != "meta":
+                content = meta
+            # We don't have usable content in the tuple
+            else:
+                print("No usable content found in the response.")
+                return
+
+        # Handle object with content attribute (from CallToolResult)
+        if hasattr(content, "content"):
+            content = content.content
+
+        # Handle object with text attribute
+        if hasattr(content, "text"):
+            content = content.text
+
+        # Handle CallToolResult content from mcp_types which can be a list
+        if isinstance(content, list) and all(hasattr(item, "text") for item in content):
+            # Extract text from each item
+            extracted_texts = [item.text for item in content if item.text]
+            if extracted_texts:
+                content = extracted_texts[0]  # Use the first text element
+
+        # Handle if content is a custom object with __str__ method
+        if not isinstance(content, (str, bytes, bytearray)) and hasattr(
+            content, "__str__"
+        ):
+            content = str(content)
+
+        # Try to handle various formats
+        if isinstance(content, str):
+            try:
+                # Try to parse as JSON
+                parsed = json.loads(content)
+                print(json.dumps(parsed, indent=2))
+            except json.JSONDecodeError:
+                # Not valid JSON, just print the string
+                print(content)
+        elif isinstance(content, (dict, list)):
+            # Direct Python objects
+            print(json.dumps(content, indent=2, default=lambda x: str(x)))
+        else:
+            # Fall back to string representation
+            print(content)
+
+    except Exception as e:
+        # Catch-all for any unexpected errors
+        print(f"Error processing response: {e}")
         print(content)
 
 

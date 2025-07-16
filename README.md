@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/awslabs-log-analyzer-with-mcp-badge.png)](https://mseep.ai/app/awslabs-log-analyzer-with-mcp)
+
 # Log Analyzer with MCP
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server that provides AI assistants access to AWS CloudWatch Logs for analysis, searching, and correlation.

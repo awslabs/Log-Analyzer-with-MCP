@@ -3,31 +3,45 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-import boto3
 import json
 from datetime import datetime, timedelta
 from typing import Dict, List
 import re
 from collections import Counter
 
+import sys
+import os
 
-class CloudWatchLogsResource:
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from aws_credentials_mixin import AWSCredentialsMixin
+
+
+class CloudWatchLogsResource(AWSCredentialsMixin):
     """Resource class for handling CloudWatch Logs resources."""
 
-    def __init__(self, profile_name=None, region_name=None):
+    def __init__(
+        self, profile_name=None, region_name=None, role_arn=None, external_id=None
+    ):
         """Initialize the CloudWatch Logs resource client.
 
         Args:
             profile_name: Optional AWS profile name to use for credentials
             region_name: Optional AWS region name to use for API calls
+            role_arn: Optional ARN of the role to assume in another AWS account
+            external_id: Optional external ID for cross-account role assumption
         """
-        # Store the profile name and region for later use
-        self.profile_name = profile_name
-        self.region_name = region_name
+        # Initialize the credentials mixin
+        super().__init__(profile_name, region_name, role_arn, external_id)
 
-        # Initialize boto3 CloudWatch Logs client using specified profile/region or default credential chain
-        session = boto3.Session(profile_name=profile_name, region_name=region_name)
-        self.logs_client = session.client("logs")
+    @property
+    def logs_client(self):
+        """Get a CloudWatch Logs client with fresh credentials."""
+        return self.get_client("logs")
+
+    @property
+    def cloudwatch_client(self):
+        """Get a CloudWatch client with fresh credentials."""
+        return self.get_client("cloudwatch")
 
     def get_log_groups(
         self, prefix: str = None, limit: int = 50, next_token: str = None
@@ -95,14 +109,10 @@ class CloudWatchLogsResource:
                 retention = f"{log_group['retentionInDays']} days"
 
             # Get metrics for the log group
-            session = boto3.Session(
-                profile_name=self.profile_name, region_name=self.region_name
-            )
-            cloudwatch = session.client("cloudwatch")
             end_time = datetime.utcnow()
             start_time = end_time - timedelta(days=1)
 
-            metrics_response = cloudwatch.get_metric_statistics(
+            metrics_response = self.cloudwatch_client.get_metric_statistics(
                 Namespace="AWS/Logs",
                 MetricName="IncomingBytes",
                 Dimensions=[
@@ -161,16 +171,16 @@ class CloudWatchLogsResource:
                 formatted_streams.append(
                     {
                         "name": stream.get("logStreamName"),
-                        "firstEventTime": datetime.fromtimestamp(
-                            first_event_time / 1000
-                        ).isoformat()
-                        if first_event_time
-                        else None,
-                        "lastEventTime": datetime.fromtimestamp(
-                            last_event_time / 1000
-                        ).isoformat()
-                        if last_event_time
-                        else None,
+                        "firstEventTime": (
+                            datetime.fromtimestamp(first_event_time / 1000).isoformat()
+                            if first_event_time
+                            else None
+                        ),
+                        "lastEventTime": (
+                            datetime.fromtimestamp(last_event_time / 1000).isoformat()
+                            if last_event_time
+                            else None
+                        ),
                         "storedBytes": stream.get("storedBytes"),
                     }
                 )
@@ -330,18 +340,12 @@ class CloudWatchLogsResource:
     def get_log_metrics(self, log_group_name: str, hours: int = 24) -> str:
         """Get log volume metrics for a log group."""
         try:
-            # Create CloudWatch client
-            session = boto3.Session(
-                profile_name=self.profile_name, region_name=self.region_name
-            )
-            cloudwatch = session.client("cloudwatch")
-
             # Calculate start and end times
             end_time = datetime.utcnow()
             start_time = end_time - timedelta(hours=hours)
 
             # Get incoming bytes
-            incoming_bytes = cloudwatch.get_metric_statistics(
+            incoming_bytes = self.cloudwatch_client.get_metric_statistics(
                 Namespace="AWS/Logs",
                 MetricName="IncomingBytes",
                 Dimensions=[
@@ -354,7 +358,7 @@ class CloudWatchLogsResource:
             )
 
             # Get incoming log events
-            incoming_events = cloudwatch.get_metric_statistics(
+            incoming_events = self.cloudwatch_client.get_metric_statistics(
                 Namespace="AWS/Logs",
                 MetricName="IncomingLogEvents",
                 Dimensions=[
@@ -502,9 +506,9 @@ class CloudWatchLogsResource:
         return {
             "logLevels": dict(levels),
             "containsTimestamp": has_timestamp,
-            "timestampPercentage": round((has_timestamp / len(events)) * 100, 2)
-            if events
-            else 0,
+            "timestampPercentage": (
+                round((has_timestamp / len(events)) * 100, 2) if events else 0
+            ),
         }
 
     def _analyze_fields(self, events: List[Dict]) -> Dict:

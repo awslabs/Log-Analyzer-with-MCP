@@ -4,7 +4,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import asyncio
-import boto3
 import json
 import time
 from datetime import datetime
@@ -12,23 +11,34 @@ from typing import List
 
 from . import handle_exceptions
 from .utils import get_time_range
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from aws_credentials_mixin import AWSCredentialsMixin
 
 
-class CloudWatchLogsSearchTools:
+class CloudWatchLogsSearchTools(AWSCredentialsMixin):
     """Tools for searching and querying CloudWatch Logs."""
 
-    def __init__(self, profile_name=None, region_name=None):
+    def __init__(
+        self, profile_name=None, region_name=None, role_arn=None, external_id=None
+    ):
         """Initialize the CloudWatch Logs client.
 
         Args:
             profile_name: Optional AWS profile name to use for credentials
             region_name: Optional AWS region name to use for API calls
+            role_arn: Optional ARN of the role to assume in another AWS account
+            external_id: Optional external ID for cross-account role assumption
         """
-        # Initialize boto3 CloudWatch Logs client using specified profile/region or default credential chain
-        self.profile_name = profile_name
-        self.region_name = region_name
-        session = boto3.Session(profile_name=profile_name, region_name=region_name)
-        self.logs_client = session.client("logs")
+        # Initialize the credentials mixin
+        super().__init__(profile_name, region_name, role_arn, external_id)
+
+    @property
+    def logs_client(self):
+        """Get a CloudWatch Logs client with fresh credentials."""
+        return self.get_client("logs")
 
     @handle_exceptions
     async def search_logs(

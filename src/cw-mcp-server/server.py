@@ -22,6 +22,12 @@ parser.add_argument(
     "--profile", type=str, help="AWS profile name to use for credentials"
 )
 parser.add_argument("--region", type=str, help="AWS region name to use for API calls")
+parser.add_argument(
+    "--role-arn", type=str, help="ARN of the role to assume in another AWS account"
+)
+parser.add_argument(
+    "--external-id", type=str, help="External ID for cross-account role assumption"
+)
 args, unknown = parser.parse_known_args()
 
 # Add the current directory to the path so we can import our modules
@@ -32,20 +38,36 @@ sys.path.append(current_dir)
 mcp = FastMCP("CloudWatch Logs Analyzer")
 
 # Initialize our resource and tools classes with the specified AWS profile and region
-cw_resource = CloudWatchLogsResource(profile_name=args.profile, region_name=args.region)
+cw_resource = CloudWatchLogsResource(
+    profile_name=args.profile,
+    region_name=args.region,
+    role_arn=args.role_arn,
+    external_id=args.external_id,
+)
 search_tools = CloudWatchLogsSearchTools(
-    profile_name=args.profile, region_name=args.region
+    profile_name=args.profile,
+    region_name=args.region,
+    role_arn=args.role_arn,
+    external_id=args.external_id,
 )
 analysis_tools = CloudWatchLogsAnalysisTools(
-    profile_name=args.profile, region_name=args.region
+    profile_name=args.profile,
+    region_name=args.region,
+    role_arn=args.role_arn,
+    external_id=args.external_id,
 )
 correlation_tools = CloudWatchLogsCorrelationTools(
-    profile_name=args.profile, region_name=args.region
+    profile_name=args.profile,
+    region_name=args.region,
+    role_arn=args.role_arn,
+    external_id=args.external_id,
 )
 
-# Capture the parsed CLI profile and region in separate variables
+# Capture the parsed CLI profile, region, role_arn, and external_id in separate variables
 default_profile = args.profile
 default_region = args.region
+default_role_arn = args.role_arn
+default_external_id = args.external_id
 
 
 # Helper decorator to handle profile and region parameters for tools
@@ -65,7 +87,14 @@ def with_aws_config(tool_class: Type, method_name: Optional[str] = None) -> Call
             try:
                 profile = kwargs.pop("profile", None) or default_profile
                 region = kwargs.pop("region", None) or default_region
-                tool_instance = tool_class(profile_name=profile, region_name=region)
+                role_arn = kwargs.pop("role_arn", None) or default_role_arn
+                external_id = kwargs.pop("external_id", None) or default_external_id
+                tool_instance = tool_class(
+                    profile_name=profile,
+                    region_name=region,
+                    role_arn=role_arn,
+                    external_id=external_id,
+                )
                 target_method = method_name or func.__name__
                 method = getattr(tool_instance, target_method)
                 result = method(**kwargs)
@@ -281,6 +310,8 @@ async def list_log_groups(
     next_token: str = None,
     profile: str = None,
     region: str = None,
+    role_arn: str = None,
+    external_id: str = None,
 ) -> str:
     """
     List available CloudWatch log groups with optional filtering by prefix.
@@ -291,6 +322,8 @@ async def list_log_groups(
         next_token: Token for pagination to get the next set of results
         profile: Optional AWS profile name to use for credentials
         region: Optional AWS region name to use for API calls
+        role_arn: Optional ARN of the role to assume in another AWS account
+        external_id: Optional external ID for cross-account role assumption
 
     Returns:
         JSON string with log groups information
@@ -309,6 +342,8 @@ async def search_logs(
     end_time: str = None,
     profile: str = None,
     region: str = None,
+    role_arn: str = None,
+    external_id: str = None,
 ) -> str:
     """
     Search logs using CloudWatch Logs Insights query.
@@ -321,6 +356,8 @@ async def search_logs(
         end_time: Optional ISO8601 end time
         profile: Optional AWS profile name to use for credentials
         region: Optional AWS region name to use for API calls
+        role_arn: Optional ARN of the role to assume in another AWS account
+        external_id: Optional external ID for cross-account role assumption
 
     Returns:
         JSON string with search results
@@ -477,4 +514,4 @@ async def correlate_logs(
 
 if __name__ == "__main__":
     # Run the MCP server
-    mcp.run()
+    mcp.run(transport="streamable-http")

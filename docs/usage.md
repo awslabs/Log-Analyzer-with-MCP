@@ -18,6 +18,14 @@ The server runs in the foreground by default. To run it in the background, you c
 python src/cw-mcp-server/server.py &
 ```
 
+[Amazon Bedrock AgentCore requires stateless streamable-HTTP servers](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-mcp.html#runtime-mcp-how-it-works) because the Runtime provides session isolation by default. The platform automatically adds a `Mcp-Session-Id` header for any request without it, so MCP clients can maintain connection continuity to the same Amazon Bedrock AgentCore Runtime session.
+
+The server runs in stateful mode by default. To run it in stateless mode, you can use:
+
+```bash
+python src/cw-mcp-server/server.py [--profile your-profile] [--region us-west-2] --stateless
+```
+
 ## 📟 CLI Client (one off usage)
 
 The project includes a command-line client for interacting with the MCP server:

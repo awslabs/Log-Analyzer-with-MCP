@@ -22,6 +22,9 @@ parser.add_argument(
     "--profile", type=str, help="AWS profile name to use for credentials"
 )
 parser.add_argument("--region", type=str, help="AWS region name to use for API calls")
+parser.add_argument(
+    "--stateless", action="store_true", help="Stateless HTTP mode", default=False
+)
 args, unknown = parser.parse_known_args()
 
 # Add the current directory to the path so we can import our modules
@@ -29,7 +32,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)
 
 # Create the MCP server for CloudWatch logs
-mcp = FastMCP("CloudWatch Logs Analyzer")
+mcp = FastMCP("CloudWatch Logs Analyzer", stateless_http=args.stateless)
 
 # Initialize our resource and tools classes with the specified AWS profile and region
 cw_resource = CloudWatchLogsResource(profile_name=args.profile, region_name=args.region)

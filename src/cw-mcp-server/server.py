@@ -74,11 +74,11 @@ def with_aws_config(tool_class: Type, method_name: Optional[str] = None) -> Call
                 return result
             except AttributeError as e:
                 raise RuntimeError(
-                    f"Method {target_method} not found in {tool_class.__name__}"
+                    f"Method {target_method} not found in {tool_class.__name__}, {e}"
                 ) from e
             except Exception as e:
                 raise RuntimeError(
-                    f"An error occurred while executing {target_method} in {tool_class.__name__}"
+                    f"An error {e} occurred while executing {target_method} in {tool_class.__name__}"
                 ) from e
 
         return wrapper

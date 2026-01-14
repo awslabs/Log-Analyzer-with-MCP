@@ -16,3 +16,9 @@ dependencies = [
 dev = [
     "ruff>=0.11.10",
 ]
+
+[project.scripts]
+server = "cw_mcp_server.server:main"
+
+[tool.uv]
+package = true

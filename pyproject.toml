@@ -18,7 +18,7 @@ dev = [
 ]
 
 [project.scripts]
-server = "cw_mcp_server.server:main"
+cw-mcp-server = "cw_mcp_server.server:main"
 
 [tool.uv]
 package = true

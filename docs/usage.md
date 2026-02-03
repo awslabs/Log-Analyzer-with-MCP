@@ -9,13 +9,13 @@ AI assistants can leverage this MCP server. To understand more check out the [AI
 The MCP server exposes CloudWatch logs data and analysis tools to AI assistants and MCP clients:
 
 ```bash
-python src/cw-mcp-server/server.py [--profile your-profile] [--region us-west-2]
+python src/cw_mcp_server/server.py [--profile your-profile] [--region us-west-2]
 ```
 
 The server runs in the foreground by default. To run it in the background, you can use:
 
 ```bash
-python src/cw-mcp-server/server.py &
+python src/cw_mcp_server/server.py &
 ```
 
 [Amazon Bedrock AgentCore requires stateless streamable-HTTP servers](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-mcp.html#runtime-mcp-how-it-works) because the Runtime provides session isolation by default. The platform automatically adds a `Mcp-Session-Id` header for any request without it, so MCP clients can maintain connection continuity to the same Amazon Bedrock AgentCore Runtime session.
@@ -23,7 +23,7 @@ python src/cw-mcp-server/server.py &
 The server runs in stateful mode by default. To run it in stateless mode, you can use:
 
 ```bash
-python src/cw-mcp-server/server.py [--profile your-profile] [--region us-west-2] --stateless
+python src/cw_mcp_server/server.py [--profile your-profile] [--region us-west-2] --stateless
 ```
 
 ## 📟 CLI Client (one off usage)

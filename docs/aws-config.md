@@ -50,7 +50,7 @@ aws configure
    If you have multiple AWS profiles or want to specify a region, use:
    
    ```bash
-   python src/cw-mcp-server/server.py --profile your-profile-name --region us-west-2
+   python src/cw_mcp_server/server.py --profile your-profile-name --region us-west-2
    ```
 
 2. **Per-Call Override**

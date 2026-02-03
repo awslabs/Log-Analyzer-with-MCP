@@ -3,11 +3,11 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-import asyncio
 import argparse
+import asyncio
 import json
-import sys
 import os
+import sys
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
@@ -272,7 +272,7 @@ async def main():
 
     # Determine the server path (relative or absolute)
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    server_path = os.path.join(script_dir, "cw-mcp-server", "server.py")
+    server_path = os.path.join(script_dir, "cw_mcp_server", "server.py")
 
     # Prepare server arguments
     server_args = [server_path]

@@ -15,12 +15,13 @@ To get Claude for Desktop and how to add an MCP server, access [this link](https
         "--from",
         "git+https://github.com/awslabs/Log-Analyzer-with-MCP",
         "cw-mcp-server"
-        // You can add "--profile", "your-profile" and/or "--region", "us-west-2" here if needed but it will pull it from your AWS credentials as well
       ]
     }
-  },
+  }
 }
 ```
+
+> **Note:** You can add `"--profile", "your-profile"` and/or `"--region", "us-west-2"` to the args array if needed, but it will pull from your AWS credentials as well.
 
 
 ## 🤖 Amazon Q CLI Integration
@@ -50,12 +51,13 @@ If `mcp.json` is empty, edit it to add this to your MCP Server configuration fil
         "--from",
         "git+https://github.com/awslabs/Log-Analyzer-with-MCP",
         "cw-mcp-server"
-        // Optionally add "--profile", "your-profile" and/or "--region", "us-west-2" here if needed but it will pull it from your AWS credentials as well
       ]
     }
   }
 }
 ```
+
+> **Note:** You can optionally add `"--profile", "your-profile"` and/or `"--region", "us-west-2"` to the args array if needed, but it will pull from your AWS credentials as well.
 
 ### Testing the configuration
 Every time you start Amazon Q CLI, it will attempt to load any configured MCP Servers. You should see output indicating that the MCP Server has been discovered and initialized.

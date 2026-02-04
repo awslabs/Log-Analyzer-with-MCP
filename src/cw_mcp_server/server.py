@@ -3,18 +3,17 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-import sys
-import os
 import argparse
 from typing import List, Callable, Any, Type, Optional
 from functools import wraps
 import asyncio
 
 from mcp.server.fastmcp import FastMCP
-from resources.cloudwatch_logs_resource import CloudWatchLogsResource
-from tools.search_tools import CloudWatchLogsSearchTools
-from tools.analysis_tools import CloudWatchLogsAnalysisTools
-from tools.correlation_tools import CloudWatchLogsCorrelationTools
+
+from .resources.cloudwatch_logs_resource import CloudWatchLogsResource
+from .tools.search_tools import CloudWatchLogsSearchTools
+from .tools.analysis_tools import CloudWatchLogsAnalysisTools
+from .tools.correlation_tools import CloudWatchLogsCorrelationTools
 
 # Parse command line arguments
 parser = argparse.ArgumentParser(description="CloudWatch Logs Analyzer MCP Server")
@@ -27,9 +26,6 @@ parser.add_argument(
 )
 args, unknown = parser.parse_known_args()
 
-# Add the current directory to the path so we can import our modules
-current_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(current_dir)
 
 # Create the MCP server for CloudWatch logs
 mcp = FastMCP("CloudWatch Logs Analyzer", stateless_http=args.stateless)
@@ -478,6 +474,10 @@ async def correlate_logs(
     pass
 
 
-if __name__ == "__main__":
+def main() -> None:
     # Run the MCP server
     mcp.run()
+
+
+if __name__ == "__main__":
+    main()

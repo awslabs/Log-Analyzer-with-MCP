@@ -9,13 +9,13 @@ AI assistants can leverage this MCP server. To understand more check out the [AI
 The MCP server exposes CloudWatch logs data and analysis tools to AI assistants and MCP clients:
 
 ```bash
-python src/cw-mcp-server/server.py [--profile your-profile] [--region us-west-2]
+uvx --from git+https://github.com/awslabs/Log-Analyzer-with-MCP cw-mcp-server [--profile your-profile] [--region us-west-2]
 ```
 
 The server runs in the foreground by default. To run it in the background, you can use:
 
 ```bash
-python src/cw-mcp-server/server.py &
+uvx --from git+https://github.com/awslabs/Log-Analyzer-with-MCP cw-mcp-server &
 ```
 
 [Amazon Bedrock AgentCore requires stateless streamable-HTTP servers](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-mcp.html#runtime-mcp-how-it-works) because the Runtime provides session isolation by default. The platform automatically adds a `Mcp-Session-Id` header for any request without it, so MCP clients can maintain connection continuity to the same Amazon Bedrock AgentCore Runtime session.
@@ -23,10 +23,21 @@ python src/cw-mcp-server/server.py &
 The server runs in stateful mode by default. To run it in stateless mode, you can use:
 
 ```bash
-python src/cw-mcp-server/server.py [--profile your-profile] [--region us-west-2] --stateless
+uvx --from git+https://github.com/awslabs/Log-Analyzer-with-MCP cw-mcp-server [--profile your-profile] [--region us-west-2] --stateless
 ```
 
 ## 📟 CLI Client (one off usage)
+
+```bash
+# Clone the repository
+git clone https://github.com/awslabs/Log-Analyzer-with-MCP.git
+cd Log-Analyzer-with-MCP
+
+# Create a virtual environment and install dependencies
+uv sync
+source .venv/bin/activate  # On Windows, use `.venv\Scripts\activate`
+```
+
 
 The project includes a command-line client for interacting with the MCP server:
 

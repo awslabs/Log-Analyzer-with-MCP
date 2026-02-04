@@ -104,3 +104,6 @@ log/
 *.bak
 *.tmp
 *.temp
+
+# AI
+settings.local.json

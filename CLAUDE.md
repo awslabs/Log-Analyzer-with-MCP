@@ -71,7 +71,7 @@ AI Assistant / CLI Client → MCP Server (server.py) → Tool Classes → boto3 
 
 ### MCP Server Structure
 
-- **Entry Point**: `cw_mcp_server.server:main()` (line 477)
+- **Entry Point**: `cw_mcp_server.server:main()`
 - **Server Instance**: `FastMCP("CloudWatch Logs Analyzer", stateless_http=args.stateless)`
 - **Decorators Used**: `@mcp.tool()`, `@mcp.resource()`, `@mcp.prompt()`
 
@@ -95,3 +95,58 @@ The `--stateless` flag enables stateless HTTP mode for Amazon Bedrock AgentCore 
 - **AWS SDK**: boto3
 - **MCP Library**: mcp[cli] with FastMCP
 - **Linting**: ruff (via pre-commit)
+
+## Code Style
+
+- **License header**: All Python files require Apache-2.0 header
+- **Docstrings**: Google-style with Args/Returns
+- **Returns**: All tools return `json.dumps(..., indent=2)`
+- **Error handling**: Use `@handle_exceptions` decorator or return JSON errors
+- **AWS params**: Always support `profile` and `region` parameters
+- **Linting**: See `.pre-commit-config.yaml` for pinned ruff version
+
+## Debugging
+
+```bash
+# MCP Inspector for interactive testing
+npx @modelcontextprotocol/inspector python -m cw_mcp_server.server
+
+# Enable debug logging
+export MCP_LOG_LEVEL=debug
+python -m cw_mcp_server.server
+
+# Verify AWS credentials
+aws sts get-caller-identity --profile PROFILE
+```
+
+## Dependency Management
+
+```bash
+uv add <package>             # Add dependency
+uv add --dev <package>       # Add dev dependency
+uv remove <package>          # Remove dependency
+uv sync                      # Sync environment
+```
+
+## Git Conventions
+
+- **Branch naming**: `feat/`, `fix/`, `docs/`, `refactor/`
+- **Commit format**: `<type>: <description>` (e.g., `feat: add time range filtering`)
+
+## Testing
+
+```bash
+# Manual testing via CLI
+python src/client.py list-groups --prefix /aws/lambda
+python src/client.py search "/aws/lambda/my-function" "ERROR"
+
+# MCP Inspector
+npx @modelcontextprotocol/inspector python -m cw_mcp_server.server
+```
+
+## Common Pitfalls
+
+1. Don't raise exceptions in tools - return JSON errors
+2. Decorator order: `@mcp.tool()` before `@with_aws_config()`
+3. Tool function bodies are `pass` - logic lives in tool classes
+4. Support both `hours` offset and ISO8601 `start_time`/`end_time` for time ranges

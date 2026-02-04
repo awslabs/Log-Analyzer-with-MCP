@@ -10,12 +10,11 @@ To get Claude for Desktop and how to add an MCP server, access [this link](https
 {
   "mcpServers": {
     "cw-mcp-server": {
-      "command": "uv",
+      "command": "uvx",
       "args": [
-        "--directory",
-        "/path/to/Log-Analyzer-with-MCP/src/cw_mcp_server",
-        "run",
-        "server.py"
+        "--from",
+        "git+https://github.com/awslabs/Log-Analyzer-with-MCP",
+        "cw-mcp-server"
         // You can add "--profile", "your-profile" and/or "--region", "us-west-2" here if needed but it will pull it from your AWS credentials as well
       ]
     }
@@ -46,12 +45,11 @@ If `mcp.json` is empty, edit it to add this to your MCP Server configuration fil
 {
   "mcpServers": {
     "cw-mcp-server": {
-      "command": "uv",
+      "command": "uvx",
       "args": [
-        "--directory",
-        "/path/to/Log-Analyzer-with-MCP/src/cw_mcp_server",
-        "run",
-        "server.py"
+        "--from",
+        "git+https://github.com/awslabs/Log-Analyzer-with-MCP",
+        "cw-mcp-server"
         // Optionally add "--profile", "your-profile" and/or "--region", "us-west-2" here if needed but it will pull it from your AWS credentials as well
       ]
     }

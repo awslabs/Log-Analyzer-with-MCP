@@ -26,22 +26,10 @@ This repository is an example client and server that allows an AI assistant like
 
 ### Prerequisites
 
-- The [uv](https://github.com/astral-sh/uv) Python package and project manager
+- The [uv](https://github.com/astral-sh/uv) Python package and project manager (includes `uvx`)
 - An AWS account with CloudWatch Logs
 - Configured [AWS credentials](./docs/aws-config.md)
 
-
-### Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/awslabs/Log-Analyzer-with-MCP.git
-cd Log-Analyzer-with-MCP
-
-# Create a virtual environment and install dependencies
-uv sync
-source .venv/bin/activate  # On Windows, use `.venv\Scripts\activate`
-```
 
 ## 🚦 Quick Start
 

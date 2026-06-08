@@ -46,8 +46,10 @@ class CloudWatchLogsCorrelationTools:
             log_group_names: List of log group names to search
             search_term: Term to search for in logs (request ID, transaction ID, etc.)
             hours: Number of hours to look back
-            start_time: Start time in ISO8601 format
-            end_time: End time in ISO8601 format
+            start_time: Start time in ISO8601 format. Naive (offset-less) values
+                are interpreted as UTC; explicit offsets are honored.
+            end_time: End time in ISO8601 format. Naive (offset-less) values are
+                interpreted as UTC; explicit offsets are honored.
 
         Returns:
             JSON string with correlated events

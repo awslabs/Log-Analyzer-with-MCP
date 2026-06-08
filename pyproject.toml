@@ -10,10 +10,12 @@ authors = [
 dependencies = [
     "boto3>=1.37.11",
     "mcp[cli]>=1.6.0",
+    "python-dateutil>=2.9",
 ]
 
 [dependency-groups]
 dev = [
+    "pytest>=8.3",
     "ruff>=0.11.10",
 ]
 

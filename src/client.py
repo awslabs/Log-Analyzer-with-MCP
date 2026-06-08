@@ -160,10 +160,14 @@ search_parser.add_argument(
     "--hours", type=int, default=24, help="Number of hours to look back (default: 24)"
 )
 search_parser.add_argument(
-    "--start-time", type=str, help="Start time (ISO8601, e.g. 2024-06-01T00:00:00Z)"
+    "--start-time",
+    type=str,
+    help="Start time (ISO8601, e.g. 2024-06-01T00:00:00Z); naive values are treated as UTC",
 )
 search_parser.add_argument(
-    "--end-time", type=str, help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z)"
+    "--end-time",
+    type=str,
+    help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z); naive values are treated as UTC",
 )
 search_parser.add_argument("--profile", help="AWS profile name to use for credentials")
 search_parser.add_argument("--region", help="AWS region name to use for API calls")
@@ -182,10 +186,14 @@ search_multi_parser.add_argument(
     "--hours", type=int, default=24, help="Number of hours to look back (default: 24)"
 )
 search_multi_parser.add_argument(
-    "--start-time", type=str, help="Start time (ISO8601, e.g. 2024-06-01T00:00:00Z)"
+    "--start-time",
+    type=str,
+    help="Start time (ISO8601, e.g. 2024-06-01T00:00:00Z); naive values are treated as UTC",
 )
 search_multi_parser.add_argument(
-    "--end-time", type=str, help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z)"
+    "--end-time",
+    type=str,
+    help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z); naive values are treated as UTC",
 )
 search_multi_parser.add_argument(
     "--profile", help="AWS profile name to use for credentials"
@@ -205,10 +213,14 @@ summarize_parser.add_argument(
     "--hours", type=int, default=24, help="Number of hours to look back (default: 24)"
 )
 summarize_parser.add_argument(
-    "--start-time", type=str, help="Start time (ISO8601, e.g. 2024-06-01T00:00:00Z)"
+    "--start-time",
+    type=str,
+    help="Start time (ISO8601, e.g. 2024-06-01T00:00:00Z); naive values are treated as UTC",
 )
 summarize_parser.add_argument(
-    "--end-time", type=str, help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z)"
+    "--end-time",
+    type=str,
+    help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z); naive values are treated as UTC",
 )
 summarize_parser.add_argument(
     "--profile", help="AWS profile name to use for credentials"
@@ -226,10 +238,14 @@ errors_parser.add_argument(
     "--hours", type=int, default=24, help="Number of hours to look back (default: 24)"
 )
 errors_parser.add_argument(
-    "--start-time", type=str, help="Start time (ISO8601, e.g. 2024-06-01T00:00:00Z)"
+    "--start-time",
+    type=str,
+    help="Start time (ISO8601, e.g. 2024-06-01T00:00:00Z); naive values are treated as UTC",
 )
 errors_parser.add_argument(
-    "--end-time", type=str, help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z)"
+    "--end-time",
+    type=str,
+    help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z); naive values are treated as UTC",
 )
 errors_parser.add_argument("--profile", help="AWS profile name to use for credentials")
 errors_parser.add_argument("--region", help="AWS region name to use for API calls")
@@ -246,10 +262,14 @@ correlate_parser.add_argument(
     "--hours", type=int, default=24, help="Number of hours to look back (default: 24)"
 )
 correlate_parser.add_argument(
-    "--start-time", type=str, help="Start time (ISO8601, e.g. 2024-06-01T00:00:00Z)"
+    "--start-time",
+    type=str,
+    help="Start time (ISO8601, e.g. 2024-06-01T00:00:00Z); naive values are treated as UTC",
 )
 correlate_parser.add_argument(
-    "--end-time", type=str, help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z)"
+    "--end-time",
+    type=str,
+    help="End time (ISO8601, e.g. 2024-06-01T23:59:59Z); naive values are treated as UTC",
 )
 correlate_parser.add_argument(
     "--profile", help="AWS profile name to use for credentials"

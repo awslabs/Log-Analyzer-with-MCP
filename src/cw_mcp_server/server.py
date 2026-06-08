@@ -316,8 +316,10 @@ async def search_logs(
         log_group_name: The log group to search
         query: CloudWatch Logs Insights query syntax
         hours: Number of hours to look back
-        start_time: Optional ISO8601 start time
-        end_time: Optional ISO8601 end time
+        start_time: Optional ISO8601 start time. Naive (offset-less) values are
+            interpreted as UTC; explicit offsets (e.g. "Z" or "+09:00") are honored.
+        end_time: Optional ISO8601 end time. Naive (offset-less) values are
+            interpreted as UTC; explicit offsets (e.g. "Z" or "+09:00") are honored.
         profile: Optional AWS profile name to use for credentials
         region: Optional AWS region name to use for API calls
 
@@ -346,8 +348,10 @@ async def search_logs_multi(
         log_group_names: List of log groups to search
         query: CloudWatch Logs Insights query in Logs Insights syntax
         hours: Number of hours to look back (default: 24)
-        start_time: Optional ISO8601 start time
-        end_time: Optional ISO8601 end time
+        start_time: Optional ISO8601 start time. Naive (offset-less) values are
+            interpreted as UTC; explicit offsets (e.g. "Z" or "+09:00") are honored.
+        end_time: Optional ISO8601 end time. Naive (offset-less) values are
+            interpreted as UTC; explicit offsets (e.g. "Z" or "+09:00") are honored.
         profile: Optional AWS profile name to use for credentials
         region: Optional AWS region name to use for API calls
 
@@ -376,8 +380,10 @@ async def filter_log_events(
         log_group_name: The log group to filter
         filter_pattern: The pattern to search for (CloudWatch Logs filter syntax)
         hours: Number of hours to look back
-        start_time: Optional ISO8601 start time
-        end_time: Optional ISO8601 end time
+        start_time: Optional ISO8601 start time. Naive (offset-less) values are
+            interpreted as UTC; explicit offsets (e.g. "Z" or "+09:00") are honored.
+        end_time: Optional ISO8601 end time. Naive (offset-less) values are
+            interpreted as UTC; explicit offsets (e.g. "Z" or "+09:00") are honored.
         profile: Optional AWS profile name to use for credentials
         region: Optional AWS region name to use for API calls
 
@@ -404,8 +410,10 @@ async def summarize_log_activity(
     Args:
         log_group_name: The log group to analyze
         hours: Number of hours to look back
-        start_time: Optional ISO8601 start time
-        end_time: Optional ISO8601 end time
+        start_time: Optional ISO8601 start time. Naive (offset-less) values are
+            interpreted as UTC; explicit offsets (e.g. "Z" or "+09:00") are honored.
+        end_time: Optional ISO8601 end time. Naive (offset-less) values are
+            interpreted as UTC; explicit offsets (e.g. "Z" or "+09:00") are honored.
         profile: Optional AWS profile name to use for credentials
         region: Optional AWS region name to use for API calls
 
@@ -432,8 +440,10 @@ async def find_error_patterns(
     Args:
         log_group_name: The log group to analyze
         hours: Number of hours to look back
-        start_time: Optional ISO8601 start time
-        end_time: Optional ISO8601 end time
+        start_time: Optional ISO8601 start time. Naive (offset-less) values are
+            interpreted as UTC; explicit offsets (e.g. "Z" or "+09:00") are honored.
+        end_time: Optional ISO8601 end time. Naive (offset-less) values are
+            interpreted as UTC; explicit offsets (e.g. "Z" or "+09:00") are honored.
         profile: Optional AWS profile name to use for credentials
         region: Optional AWS region name to use for API calls
 
@@ -462,8 +472,10 @@ async def correlate_logs(
         log_group_names: List of log group names to search
         search_term: Term to search for in logs (request ID, transaction ID, etc.)
         hours: Number of hours to look back
-        start_time: Optional ISO8601 start time
-        end_time: Optional ISO8601 end time
+        start_time: Optional ISO8601 start time. Naive (offset-less) values are
+            interpreted as UTC; explicit offsets (e.g. "Z" or "+09:00") are honored.
+        end_time: Optional ISO8601 end time. Naive (offset-less) values are
+            interpreted as UTC; explicit offsets (e.g. "Z" or "+09:00") are honored.
         profile: Optional AWS profile name to use for credentials
         region: Optional AWS region name to use for API calls
 

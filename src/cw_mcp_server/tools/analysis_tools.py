@@ -42,8 +42,10 @@ class CloudWatchLogsAnalysisTools:
         Args:
             log_group_name: The log group to analyze
             hours: Number of hours to look back
-            start_time: Start time in ISO8601 format
-            end_time: End time in ISO8601 format
+            start_time: Start time in ISO8601 format. Naive (offset-less) values
+                are interpreted as UTC; explicit offsets are honored.
+            end_time: End time in ISO8601 format. Naive (offset-less) values are
+                interpreted as UTC; explicit offsets are honored.
 
         Returns:
             JSON string with activity summary
@@ -147,8 +149,10 @@ class CloudWatchLogsAnalysisTools:
         Args:
             log_group_name: The log group to analyze
             hours: Number of hours to look back
-            start_time: Start time in ISO8601 format
-            end_time: End time in ISO8601 format
+            start_time: Start time in ISO8601 format. Naive (offset-less) values
+                are interpreted as UTC; explicit offsets are honored.
+            end_time: End time in ISO8601 format. Naive (offset-less) values are
+                interpreted as UTC; explicit offsets are honored.
 
         Returns:
             JSON string with error patterns

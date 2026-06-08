@@ -46,8 +46,10 @@ class CloudWatchLogsSearchTools:
             log_group_name: The log group to search
             query: CloudWatch Logs Insights query syntax
             hours: Number of hours to look back
-            start_time: Start time in ISO8601 format
-            end_time: End time in ISO8601 format
+            start_time: Start time in ISO8601 format. Naive (offset-less) values
+                are interpreted as UTC; explicit offsets are honored.
+            end_time: End time in ISO8601 format. Naive (offset-less) values are
+                interpreted as UTC; explicit offsets are honored.
 
         Returns:
             JSON string with search results
@@ -72,8 +74,10 @@ class CloudWatchLogsSearchTools:
             log_group_names: List of log groups to search
             query: CloudWatch Logs Insights query syntax
             hours: Number of hours to look back
-            start_time: Start time in ISO8601 format
-            end_time: End time in ISO8601 format
+            start_time: Start time in ISO8601 format. Naive (offset-less) values
+                are interpreted as UTC; explicit offsets are honored.
+            end_time: End time in ISO8601 format. Naive (offset-less) values are
+                interpreted as UTC; explicit offsets are honored.
 
         Returns:
             JSON string with search results
@@ -141,8 +145,10 @@ class CloudWatchLogsSearchTools:
             log_group_name: The log group to filter
             filter_pattern: The pattern to search for (CloudWatch Logs filter syntax)
             hours: Number of hours to look back
-            start_time: Start time in ISO8601 format
-            end_time: End time in ISO8601 format
+            start_time: Start time in ISO8601 format. Naive (offset-less) values
+                are interpreted as UTC; explicit offsets are honored.
+            end_time: End time in ISO8601 format. Naive (offset-less) values are
+                interpreted as UTC; explicit offsets are honored.
 
         Returns:
             JSON string with filtered events

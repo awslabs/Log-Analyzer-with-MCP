@@ -84,6 +84,22 @@ python src/client.py correlate "/aws/lambda/service1" "/aws/lambda/service2" "Or
 
 *You can use --profile and --region with any command to target a specific AWS account or region.*
 
+## 🕐 Time ranges & timezones
+
+Tools and CLI commands that accept `--start-time` / `--end-time` parse ISO8601
+timestamps. The timezone convention is:
+
+- **Naive timestamps** (no `Z` suffix and no offset, e.g. `2025-01-01T00:00:00`)
+  are interpreted as **UTC**. This makes results independent of the server's
+  local timezone — the same input always maps to the same instant.
+- **Offset-aware timestamps** are honored as written, e.g. `2025-01-01T00:00:00Z`
+  (UTC) or `2025-01-01T09:00:00+09:00` (Asia/Tokyo, which is `00:00:00Z`).
+- When `--start-time` is omitted, the range is computed as the last `--hours`
+  hours relative to the current time in UTC.
+
+To target a local wall-clock time, include an explicit offset (e.g.
+`2025-01-01T09:00:00+09:00`) rather than relying on the server's timezone.
+
 ## 🧩 Example Workflows
 
 ### Finding and analyzing errors in a Lambda function using the standalone server directly

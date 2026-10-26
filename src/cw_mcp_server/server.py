@@ -275,11 +275,11 @@ Feel free to ask for additional context if needed, such as:
 @mcp.tool()
 @with_aws_config(CloudWatchLogsResource, method_name="get_log_groups")
 async def list_log_groups(
-    prefix: str = None,
+    prefix: Optional[str] = None,
     limit: int = 50,
-    next_token: str = None,
-    profile: str = None,
-    region: str = None,
+    next_token: Optional[str] = None,
+    profile: Optional[str] = None,
+    region: Optional[str] = None,
 ) -> str:
     """
     List available CloudWatch log groups with optional filtering by prefix.
@@ -304,10 +304,10 @@ async def search_logs(
     log_group_name: str,
     query: str,
     hours: int = 24,
-    start_time: str = None,
-    end_time: str = None,
-    profile: str = None,
-    region: str = None,
+    start_time: Optional[str] = None,
+    end_time: Optional[str] = None,
+    profile: Optional[str] = None,
+    region: Optional[str] = None,
 ) -> str:
     """
     Search logs using CloudWatch Logs Insights query.
@@ -336,10 +336,10 @@ async def search_logs_multi(
     log_group_names: List[str],
     query: str,
     hours: int = 24,
-    start_time: str = None,
-    end_time: str = None,
-    profile: str = None,
-    region: str = None,
+    start_time: Optional[str] = None,
+    end_time: Optional[str] = None,
+    profile: Optional[str] = None,
+    region: Optional[str] = None,
 ) -> str:
     """
     Search logs across multiple log groups using CloudWatch Logs Insights.
@@ -368,10 +368,10 @@ async def filter_log_events(
     log_group_name: str,
     filter_pattern: str,
     hours: int = 24,
-    start_time: str = None,
-    end_time: str = None,
-    profile: str = None,
-    region: str = None,
+    start_time: Optional[str] = None,
+    end_time: Optional[str] = None,
+    profile: Optional[str] = None,
+    region: Optional[str] = None,
 ) -> str:
     """
     Filter log events by pattern across all streams in a log group.
@@ -399,10 +399,10 @@ async def filter_log_events(
 async def summarize_log_activity(
     log_group_name: str,
     hours: int = 24,
-    start_time: str = None,
-    end_time: str = None,
-    profile: str = None,
-    region: str = None,
+    start_time: Optional[str] = None,
+    end_time: Optional[str] = None,
+    profile: Optional[str] = None,
+    region: Optional[str] = None,
 ) -> str:
     """
     Generate a summary of log activity over a specified time period.
@@ -429,10 +429,10 @@ async def summarize_log_activity(
 async def find_error_patterns(
     log_group_name: str,
     hours: int = 24,
-    start_time: str = None,
-    end_time: str = None,
-    profile: str = None,
-    region: str = None,
+    start_time: Optional[str] = None,
+    end_time: Optional[str] = None,
+    profile: Optional[str] = None,
+    region: Optional[str] = None,
 ) -> str:
     """
     Find common error patterns in logs.
@@ -460,10 +460,10 @@ async def correlate_logs(
     log_group_names: List[str],
     search_term: str,
     hours: int = 24,
-    start_time: str = None,
-    end_time: str = None,
-    profile: str = None,
-    region: str = None,
+    start_time: Optional[str] = None,
+    end_time: Optional[str] = None,
+    profile: Optional[str] = None,
+    region: Optional[str] = None,
 ) -> str:
     """
     Correlate logs across multiple AWS services using a common search term.

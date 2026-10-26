@@ -318,7 +318,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "boto3", specifier = ">=1.37.11" },
-    { name = "mcp", extras = ["cli"], specifier = ">=1.6.0" },
+    { name = "mcp", extras = ["cli"], specifier = ">=1.6.0,<2" },
     { name = "python-dateutil", specifier = ">=2.9" },
 ]
 

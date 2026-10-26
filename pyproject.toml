@@ -9,7 +9,7 @@ authors = [
 ]
 dependencies = [
     "boto3>=1.37.11",
-    "mcp[cli]>=1.6.0",
+    "mcp[cli]>=1.6.0,<2",
     "python-dateutil>=2.9",
 ]
 
